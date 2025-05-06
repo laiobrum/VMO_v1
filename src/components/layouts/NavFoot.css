@@ -1,0 +1,26 @@
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid black;
+    padding: 0 2em;
+    box-shadow: rgba(0,0,0, .15) 0px -2px 10px 0px; 
+}
+nav ul {
+    display: flex;
+    list-style-type: none;
+    text-decoration: none;
+    gap: 30px;
+}
+/* a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+  cursor: pointer;
+}
+a:hover {
+  color: #4851f4;
+} */
+.active {
+  font-weight: bolder;
+}

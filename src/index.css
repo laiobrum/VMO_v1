@@ -1,0 +1,109 @@
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --bgColor1: #f8f8f8;
+  --btnColor-1: #646cff;
+  --btnColor-2: #535bf2;
+}
+
+.a1 {
+  all: unset;
+  font-weight: 500;
+  color: var(--btnColor-1);
+  cursor: pointer;
+}
+.a1:hover {
+  color: var(--btnColor-2);
+}
+.a2 {
+  all: unset;
+  font-weight: 500;
+  background-color: var(--btnColor-1);
+  padding: 9px 15px;
+  cursor: pointer;
+  border: 1px solid var(--btnColor-2);
+  border-radius: 8px;
+  color: white;
+  transition: border-color 0.25s;
+}
+.a2:hover{
+  background-color: white;
+  color: var(--btnColor-2);
+}
+.a2:focus {
+  background-color: white;
+  color: var(--btnColor-2);
+  border: 1px solid var(--btnColor-2);
+}
+
+body {
+  margin: 0;
+  color: #213547;
+  background-color: var(--bgColor1)
+}
+main {
+  text-align: center;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+h2 {
+  font-size: 2em;
+  margin: 0;
+  margin-bottom: .8em;
+}
+
+.btn1 {
+  font-size: 1em;
+  font-weight: bold;
+  padding: 0.7em 1.2em;
+  border: none;
+  border: 1px solid transparent;
+  background-color: var(--btnColor-1);
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+.btn1:hover {
+  background-color: var(--btnColor-2);
+
+}
+.btn1:focus,
+.btn1:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+.btn2 {
+  font-size: 1em;
+  font-weight: bolder;
+  padding: 0.7em 1.2em;
+  border: none;
+  border: 1px solid transparent;
+  background-color: var(--bgColor1);
+  color: var(--btnColor-2);
+  border: 1px solid var(--btnColor-2);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+.btn2:hover {
+  background-color: var(--btnColor-2);
+  color: white;
+}
+.btn2:focus,
+.btn2:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+.btn3 {
+  background-color: inherit;
+  border: none;
+  font-weight: bold;
+  color: var(--btnColor-1);
+  font-size: 1em;
+  cursor: pointer;
+}
+.btn3:hover {
+  color: var(--btnColor-2);
+}
+
