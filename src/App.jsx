@@ -13,6 +13,8 @@ import Profile from "./pages/Profile"
 import Recover from "./pages/Recover"
 import AreaRestrita from "./pages/AreaRestrita"
 import { useAdminAccess } from "./hooks/useAdminAccess"
+import InserirLeis from "./pages/InserirLeis"
+import TesteLei from "./pages/TesteLei"
 
 function App() {
   const [user, setUser] = useState(undefined)
@@ -42,6 +44,8 @@ function App() {
               <Route path="/profile" element={emailVerifiedUser ? <Profile/> : <Navigate to='/login'/>}/>
               <Route path="/recoverPassword" element={<Recover/>}/>
               <Route path="/restrictarea" element={(emailVerifiedUser && isAdmin) ? <AreaRestrita/> : <Navigate to='/'/>}/>
+              <Route path="/insertlaws" element={(emailVerifiedUser && isAdmin) ? <InserirLeis/> : <Navigate to='/'/>}/>
+              <Route path="/teste-nova-lei" element={<TesteLei/>}/>
               
               
               <Route path="*" element={<NotFound/>}/>

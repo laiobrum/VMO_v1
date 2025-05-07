@@ -1,8 +1,10 @@
+import { NavLink } from "react-router-dom"
+
 const AreaRestrita = () => {
   return (
     <div>
-        <h1>AreaRestrita</h1>
-        <h2>Fazer aqui a lógica de incluir as leis no BD. Iniciar com a CF para construir a UI</h2>
+        <h2>Administração de conteúdo</h2>
+        <NavLink className='a1' to='/insertlaws'>Incluir leis</NavLink>
     </div>
   )
 }

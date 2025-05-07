@@ -2,7 +2,7 @@ const Home = () => {
 
   return (
     <div>
-        <h1>FAZER AGORA O LOGIN COM O GOOGLE</h1>
+        
         <h1>Home</h1>
         <h2>Acesso rápido</h2>
         <h3>Constituição Federal</h3>
