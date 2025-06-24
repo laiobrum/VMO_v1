@@ -14,6 +14,7 @@ import Recover from "./pages/Recover"
 import AreaRestrita from "./pages/AreaRestrita"
 import { useAdminAccess } from "./hooks/useAdminAccess"
 import InserirLeis from "./pages/InserirLeis"
+// import TesteLei from "./pages/TesteLei"
 import TesteLei from "./pages/TesteLei"
 
 function App() {

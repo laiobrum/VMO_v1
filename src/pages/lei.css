@@ -1,0 +1,53 @@
+p {
+  text-align: justify;
+  font-size: 1em;
+  line-height: 1.6;
+  margin: 0.4em 0;
+}
+
+span {
+  font-weight: bold;
+  font-size: 1.2em;
+}
+.center {
+  margin-top: 1em;
+}
+.center p {
+  text-align: center;
+  font-weight: bold;
+}
+
+.book {
+  max-width: 1200px;
+  margin: 0 auto;
+  overflow-y: auto;
+  height: calc(100vh - 40px);
+  scroll-behavior: smooth;
+  box-sizing: border-box;
+}
+
+.page {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  background-color: white;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  height: auto; /* Altura agora pode variar */
+  box-sizing: border-box;
+}
+
+.column {
+  font-size: 14px;
+  line-height: 1.6;
+  overflow: visible;
+  text-align: justify;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+.column p {
+  /* margin: 0; */
+  line-height: 1.6;
+}
