@@ -41,6 +41,7 @@ const Navbar = () => {
 
                 <ul className={`dropdown-menu ${dropdownOpen ? 'open' : ''}`}>
                   <NavLink className='a1' to='/profile' onClick={() => handleItemClick()}><li>Meu Painel</li></NavLink>
+                  <NavLink className='a1' to='/insertlaws'><li>Incluir leis</li></NavLink>
                   <li className='btn3' onClick={() => handleItemClick(logout)}>Sair</li>
                 </ul>
               </li>

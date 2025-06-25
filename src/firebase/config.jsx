@@ -12,7 +12,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyA4JeUzO5YBvqlumNmZLMnb33puHhNZQRI",
   authDomain: "vmo-v1.firebaseapp.com",
   projectId: "vmo-v1",
-  storageBucket: "vmo-v1.firebasestorage.app",
+  storageBucket: "vmo-v1.appspot.com",
   messagingSenderId: "70890371545",
   appId: "1:70890371545:web:9b1aa7d09e8f84160901c8",
   measurementId: "G-834EQPGVRN"
@@ -26,6 +26,6 @@ const googleProvider = new GoogleAuthProvider()
 // Firestore
 const db = getFirestore(app)
 // Analitics
-const analytics = getAnalytics(app);
+// const analytics = getAnalytics(app); --> Colocar só quando for usar
 
 export { db, auth, googleProvider }

@@ -5,6 +5,7 @@ const TesteLei = () => {
   const [textoCompleto, setTextoCompleto] = useState('');
   const bookRef = useRef(null);
 
+  //Pega dados do storage temporário e coloca no estado
   useEffect(() => {
     const texto = localStorage.getItem('texto-temporário') || '';
     setTextoCompleto(texto);

@@ -16,6 +16,8 @@ import { useAdminAccess } from "./hooks/useAdminAccess"
 import InserirLeis from "./pages/InserirLeis"
 // import TesteLei from "./pages/TesteLei"
 import TesteLei from "./pages/TesteLei"
+import TodasLeis from "./pages/Leis/TodasLeis"
+import VisualizeLei from "./pages/Leis/VisualizeLei"
 
 function App() {
   const [user, setUser] = useState(undefined)
@@ -47,6 +49,10 @@ function App() {
               <Route path="/restrictarea" element={(emailVerifiedUser && isAdmin) ? <AreaRestrita/> : <Navigate to='/'/>}/>
               <Route path="/insertlaws" element={(emailVerifiedUser && isAdmin) ? <InserirLeis/> : <Navigate to='/'/>}/>
               <Route path="/teste-nova-lei" element={<TesteLei/>}/>
+
+              {/* Rotas públicas */}
+              <Route path="/leis" element={<TodasLeis/>}/>
+              <Route path="/leis/:leiId" element={<VisualizeLei/>}/>
               
               
               <Route path="*" element={<NotFound/>}/>

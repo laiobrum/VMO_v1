@@ -1,15 +1,27 @@
 import { useState } from "react";
+import { db } from '../firebase/config'
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 function InserirLeis() {
     const [title, setTitle] = useState('')
     const [texto, setTexto] = useState('')
 
-    const handleSubmit=(evt)=>{
-        const user = {
-            title,
-            texto
+    const salvarLei = async (e) => {
+        e.preventDefault()
+
+        try {
+            await addDoc(collection(db, 'leis'), {
+                title: title.trim(),
+                texto: texto.trim(),
+                createdAt: serverTimestamp(),
+            })
+            alert("Lei salva com sucesso")
+            setTitle('')
+            setTexto('')
+        } catch (error) {
+            console.error("Erro ao salvar lei: ", error)
+            alert('Erro ao salvar a lei. Veja o console')
         }
-        console.log(user)
     }
 
     const formatLaw = (e) => {
@@ -67,7 +79,7 @@ function InserirLeis() {
     return (
         <div>
             <h2>Formatação e inclusão de lei:</h2>
-            <form className="formContainer2" onSubmit={handleSubmit}>
+            <form className="formContainer2" onSubmit={salvarLei}>
                 <label className="formControl">
                     <span>Título da lei: </span>
                     <input type="text" name="title" placeholder="Ex.: Constituição Federal" onChange={(e)=>setTitle(e.target.value)} required />
@@ -83,7 +95,7 @@ function InserirLeis() {
                 <button onClick={visualize} className="btn2">Pré-visualizar</button>
                 <br />
                 <br />
-                <input className="btn1" type="submit" />
+                <input className="btn1" type="submit" value="Salvar Lei" />
             </form>
         </div>
     )

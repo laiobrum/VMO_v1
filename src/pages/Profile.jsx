@@ -14,6 +14,7 @@ const Profile = () => {
           <>
             <h1>Olá, {user.uid}</h1>
             <h2>{user.displayName}</h2>
+            <h3>{user.email}</h3>
             <h3>Alterar dados</h3>
             <Link to='/recoverPassword'>Alterar senha</Link>
           </>
