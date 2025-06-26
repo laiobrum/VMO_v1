@@ -1,5 +1,5 @@
 import { doc, getDoc } from "firebase/firestore"
-import { useDebugValue, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { db } from "../firebase/config"
 
 export const useAdminAccess = (user) => {

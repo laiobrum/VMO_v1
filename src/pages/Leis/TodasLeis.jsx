@@ -5,6 +5,7 @@ import { NavLink } from 'react-router-dom'
 
 const TodasLeis = () => {
     const [leis, setLeis] = useState([])
+    console.log(leis)
 
     useEffect(() => {
         const fetchLeis = async () => {
