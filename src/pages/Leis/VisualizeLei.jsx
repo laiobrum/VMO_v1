@@ -4,6 +4,7 @@ import '../lei.css'
 import ToolBar2 from "../../components/ToolBar2"
 import { useFetchDocument } from "../../hooks/useFetchDocument"
 import { useAuthValue } from "../../context/AuthContext"
+import { useSaveUserAlterations } from "../../hooks/useSaveUserAlterations"
 
 const VisualizeLei = () => {
     const { leiId } = useParams()
@@ -14,6 +15,11 @@ const VisualizeLei = () => {
 
     //Fetch dos dados - coloca no estado "Lei"
     const {document: lei, loading, error} = useFetchDocument('leis', leiId)
+
+    //Salva alterações a cada 30 segundos
+        // PAREI AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+        // JÁAAAAAAAAAAAAAA CRIADO O HOOK!!!! CHATGPT NÃO CONSEGUIU ME ENTREGAR OQ EU QUERIA
+    useSaveUserAlterations( {bookRef, userId: user?.uid, leiId } )
 
     useEffect(() => {
         if (!lei) return
