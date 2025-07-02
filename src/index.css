@@ -2,8 +2,8 @@
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   --bgColor1: #f8f8f8;
   --bgColor2: #f0f0f0;
-  --btnColor-1: #646cff;
-  --btnColor-2: #535bf2;
+  --btnColor-2: #6b72f9;
+  --btnColor-1: #4850ef;
 }
 
 
@@ -11,7 +11,7 @@
 body {
   margin: 0;
   color: #213547;
-  background-color: var(--bgColor1)
+  background-color: var(--bgColor1);
 }
 main {
   text-align: center;

@@ -5,9 +5,23 @@ p {
   margin: 0.4em 0;
 }
 
-span {
+.titles {
   font-weight: bold;
   font-size: 1.2em;
+}
+ul {
+  margin: 0;
+  list-style-type: none;
+  text-decoration: none;
+  gap: 30px;
+}
+ul a {
+  text-decoration: none;
+  color: var(--btnColor-1);
+  font-weight: bold;
+}
+ul a:hover { 
+  color: var(--btnColor-2);
 }
 .center {
   margin-top: 1em;
@@ -51,3 +65,5 @@ span {
   /* margin: 0; */
   line-height: 1.6;
 }
+
+

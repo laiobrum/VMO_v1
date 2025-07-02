@@ -1,16 +1,19 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import './NavFoot.css'
 import { useAuthValue } from '../../context/AuthContext'
 import { useAuthentication } from '../../hooks/useAuthentication'
 import { BsPersonFill } from "react-icons/bs";
 import { MdOutlineArrowDropDown } from 'react-icons/md'
 import { useEffect, useRef, useState } from 'react'
+import ToolBar from "../ToolBar"
 
 const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef(null)
   const {user} = useAuthValue()
   const {logout} = useAuthentication()
+  const location = useLocation()
+  const isOnLawPage = /^\/leis\/[^/]+$/.test(location.pathname)
 
   const toggleDropDown = () => { setDropdownOpen(prev => !prev) }
 
@@ -34,6 +37,7 @@ const Navbar = () => {
     return (
       <nav>
           <h3><NavLink className='a1' to='/'>VMO</NavLink></h3>
+          {isOnLawPage && <ToolBar />}
           <ul>
             {user ? 
             <>
