@@ -27,8 +27,8 @@ const ToolBar = () => {
     //Checa se contém qualquer <p> ou </p>
     const containsParagraph = /<\/?p>/i.test(html)
     if(containsParagraph) {
-      console.log("Você não pode marcar um parágrafo inteiro ou múltiplos parágrafos.")
-      setAlertMsg("Você não pode marcar um parágrafo inteiro ou múltiplos parágrafos.")
+      console.log("Você não pode marcar mais de um dispositivo de uma vez.")
+      setAlertMsg("Você não pode marcar mais de um dispositivo de uma vez.")
       selection.removeAllRanges()
       return
     }
