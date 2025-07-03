@@ -33,7 +33,7 @@ const ToolBar = () => {
       selection.removeAllRanges()
       return
     }
-//WHATEVER
+
     const span = document.createElement('span')
     const toolClasses = {
       highlightMode: 'yellowHL',
