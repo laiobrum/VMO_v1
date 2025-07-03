@@ -2,33 +2,41 @@ import { useEffect, useRef, useState } from "react"
 import { useParams } from "react-router-dom"
 import '../lei.css'
 import ToolBar2 from "../../components/ToolBar2"
-import { useFetchDocument } from "../../hooks/useFetchDocument"
 import { useAuthValue } from "../../context/AuthContext"
 import { useSaveUserAlterations } from "../../hooks/useSaveUserAlterations"
+import { useFetchUserDocument } from "../../hooks/useFetchUserDocument"
 
 const VisualizeLei = () => {
     const { leiId } = useParams()
     const {user} = useAuthValue()
-    const [hoveredP, setHoveredP] = useState(null)
-    const [isToolbarHovered, setIsToolbarHovered] = useState(false)
     const bookRef = useRef(null)
 
+    const [hoveredP, setHoveredP] = useState(null)
+    const [isToolbarHovered, setIsToolbarHovered] = useState(false)
+    
     //Fetch dos dados - coloca no estado "Lei"
-    const {document: lei, loading, error} = useFetchDocument('leis', leiId)
+    const {document: lei, loading, error} = useFetchUserDocument({
+        docCollection: 'leis',
+        docId: leiId,
+        userId: user?.uid
+    })
 
-    //Salva alterações a cada 30 segundos
-        // PAREI AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
-        // JÁAAAAAAAAAAAAAA CRIADO O HOOK!!!! CHATGPT NÃO CONSEGUIU ME ENTREGAR OQ EU QUERIA
-    useSaveUserAlterations( {bookRef, userId: user?.uid, leiId } )
+    //Salva alterações ao apertar botão
+    const save = useSaveUserAlterations( {bookRef, userId: user?.uid, leiId } )
+    const testeSave = () => {
+        let texto = bookRef.current.innerHTML
+        console.log(texto);
+        save()
+    }
 
     useEffect(() => {
-        if (!lei) return
+        if (!lei?.textoRenderizado) return
 
         const book = bookRef.current
         book.innerHTML = ''
 
         const tempContainer = document.createElement('div')
-        tempContainer.innerHTML = lei.texto
+        tempContainer.innerHTML = lei.textoRenderizado
         const nodes = Array.from(tempContainer.childNodes)
 
         const columnsPerPage = 3
@@ -105,6 +113,7 @@ const VisualizeLei = () => {
 
     return (
         <div className="law_container">
+            <button onClick={testeSave} style={{position: 'relative', left: '200px'}}>Teste Save</button>
             
             <div className='book' id='book' ref={bookRef}>
             </div>
@@ -122,6 +131,7 @@ const VisualizeLei = () => {
                 }}
                 >
                     <ToolBar2 bookRef={bookRef}/>
+                    
                 </div>
             )}
         </div>
