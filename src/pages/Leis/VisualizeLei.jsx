@@ -14,7 +14,7 @@ const VisualizeLei = () => {
     const [hoveredP, setHoveredP] = useState(null)
     const [isToolbarHovered, setIsToolbarHovered] = useState(false)
     
-    //Fetch dos dados - coloca no estado "Lei"
+    //Fetch dos dados - pega a lei alterada pelo usuário, se não tiver, pega a lei original - coloca no estado "Lei"
     const {document: lei, loading, error} = useFetchUserDocument({
         docCollection: 'leis',
         docId: leiId,
@@ -36,7 +36,12 @@ const VisualizeLei = () => {
         book.innerHTML = ''
 
         const tempContainer = document.createElement('div')
-        tempContainer.innerHTML = lei.textoRenderizado
+        try {
+            tempContainer.innerHTML = lei.textoRenderizado
+        } catch (err) {
+            console.error("Erro ao interpretar HTML salvo:", err)
+            return
+        }
         const nodes = Array.from(tempContainer.childNodes)
 
         const columnsPerPage = 3
@@ -106,7 +111,7 @@ const VisualizeLei = () => {
             book.removeEventListener('mouseleave', handleMouseLeave)
         }
 
-    }, [lei, isToolbarHovered])
+    }, [lei])//Não colocar isToolbarHovered, pq sempre quando hover, ele restarta o useEffect e tira as marcações!
 
     if (loading) return <p>Carregando...</p>
     if (error) return <p>Ocorreu algum erro</p>

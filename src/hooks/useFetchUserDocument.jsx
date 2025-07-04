@@ -10,49 +10,57 @@ export const useFetchUserDocument = ({ docCollection, docId, userId }) => {
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
-        let isCancelled = false
+    let isCancelled = false
 
-        const loadData = async () => {
-            setLoading(true)
-            setError(null)
+    const loadData = async () => {
+        setLoading(true)
+        setError(null)
 
-            try {
-                const anotRef = doc(db, "anotacoesUsuario", `${userId}_${docId}`)
-                const anotSnap = await getDoc(anotRef)
+        try {
+            const anotRef = doc(db, "anotacoesUsuario", `${userId}_${docId}`)
+            const anotSnap = await getDoc(anotRef)
 
-                if(!isCancelled && anotSnap.exists()) {
+            if (!isCancelled && anotSnap.exists()) {
+                const data = anotSnap.data()
+                console.log("Dados da anotação:", data.textoEditado)
+                if (data.textoEditado !== "") {
+                    console.log('hey')
                     setDocument({
                         id: `${userId}_${docId}`,
-                        textoRenderizado: anotSnap.data().textoEditado
+                        textoRenderizado: data.textoEditado
                     })
-                } else {
-                    const leiRef = doc(db, docCollection, docId)
-                    const leiSnap = await getDoc(leiRef)
-                    if (!isCancelled && leiSnap.exists()) {
-                        console.log("campo texto:", leiSnap.data().texto)
-                        setDocument({
-                            id: leiSnap.id,
-                            textoRenderizado: leiSnap.data().texto
-                        })
-                    } else if (!isCancelled) {
-                        setError("Documento não encontrado.")
-                    }
+                    return
                 }
-                
-            } catch (error) {
-                if(!isCancelled) setError(error.message)
-                
-            } finally {
-                if (!isCancelled) setLoading(false)
             }
-        }
 
-        if(userId && docId) loadData()
+            // Se não existe anotação ou textoEditado é vazio, busca a lei original
+            const leiRef = doc(db, docCollection, docId)
+            const leiSnap = await getDoc(leiRef)
 
-        return () => {
-            isCancelled = true
-        }
-    }, [docCollection, docId, userId])
+            if (!isCancelled && leiSnap.exists()) {
+                setDocument({
+                    id: leiSnap.id,
+                    textoRenderizado: leiSnap.data().texto
+                })
+            } else if (!isCancelled) {
+                setError("Documento não encontrado.")
+            }
+                } catch (error) {
+                    if (!isCancelled) {
+                        console.error("Erro ao carregar dados:", error)
+                        setError(error.message)
+                    }
+                } finally {
+                    if (!isCancelled) setLoading(false)
+                }
+            }
+
+            if (userId && docId) loadData()
+
+            return () => {
+                isCancelled = true
+            }
+        }, [docCollection, docId, userId])
 
     return { document, loading, error }
 }

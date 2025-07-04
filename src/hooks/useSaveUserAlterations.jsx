@@ -1,18 +1,20 @@
 import { doc, setDoc } from "firebase/firestore"
 import { db } from "../firebase/config"
 
-export const useSaveUserAlterations = ({ bookRef, userId, leiId}) => {
+export const useSaveUserAlterations = ({ bookRef, userId, leiId }) => {
     const save = async () => {
-        if(!bookRef?.current || !userId || !leiId) return
-
-        const html = bookRef.current.innerHTML
-        const ref = doc(db, "anotacoesUsuario", `${userId}_${leiId}`)
-        await setDoc(ref, {
-            userId,
-            leiId,
-            textoEditado: html,
-            atualizadoEm: new Date()
-        })
+        try {
+            const html = bookRef.current.innerHTML
+            const ref = doc(db, "anotacoesUsuario", `${userId}_${leiId}`)
+            await setDoc(ref, {
+                userId,
+                leiId,
+                textoEditado: html,
+                atualizadoEm: new Date()
+            })
+        } catch (error) {
+            console.log(error.message)
+        }
     }
 
     return save
