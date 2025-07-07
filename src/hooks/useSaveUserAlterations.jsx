@@ -1,10 +1,13 @@
 import { doc, setDoc } from "firebase/firestore"
 import { db } from "../firebase/config"
+import { useState } from "react"
 
 export const useSaveUserAlterations = ({ bookRef, userId, leiId }) => {
+  const [salvando, setSalvando] = useState(null)
   
-  const save = async () => {    
+  const save = async () => {   
     try {
+      setSalvando(true) 
       const paragraphs = Array.from(
         bookRef.current.querySelectorAll(".column > p, .column > div")
       )
@@ -17,11 +20,11 @@ export const useSaveUserAlterations = ({ bookRef, userId, leiId }) => {
         textoEditado: html,
         atualizadoEm: new Date()
       })
-
+      setSalvando(false)
     } catch (error) {
       console.log(error.message)
     }
   }
 
-  return save
+  return {save, salvando}
 }

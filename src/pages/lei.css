@@ -2,7 +2,13 @@ p {
   text-align: justify;
   font-size: 1em;
   line-height: 1.6;
-  margin: 0.4em 0;
+  margin: 0;
+  padding: 4px;
+  border-radius: 5px;
+}
+p:hover {
+  box-shadow: rgba(0, 0, 0, 0.077) 0px -1px 5px 0px; 
+  background-color: var(--bgColor2);
 }
 
 .titles {
@@ -57,7 +63,7 @@ ul a:hover {
   line-height: 1.6;
   overflow: visible;
   text-align: justify;
-  padding: 0 10px;
+  padding: 0 4px;
   box-sizing: border-box;
 }
 

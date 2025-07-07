@@ -23,9 +23,7 @@ export const useFetchUserDocument = ({ docCollection, docId, userId }) => {
 
             if (!isCancelled && anotSnap.exists()) {
                 const data = anotSnap.data()
-                console.log("Dados da anotação:", data.textoEditado)
                 if (data.textoEditado !== "") {
-                    console.log('hey')
                     setDocument({
                         id: `${userId}_${docId}`,
                         textoRenderizado: data.textoEditado

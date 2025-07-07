@@ -22,7 +22,7 @@ const VisualizeLei = () => {
     })
 
     //Salva alterações ao apertar botão
-    const save = useSaveUserAlterations( {bookRef, userId: user?.uid, leiId } )
+    const {save, salvando} = useSaveUserAlterations( {bookRef, userId: user?.uid, leiId } )
 
     useEffect(() => {
         if (!lei?.textoRenderizado) return
@@ -91,9 +91,13 @@ const VisualizeLei = () => {
         }
 
         function handleMouseLeave(e) {
-            if(!bookRef.current.contains(e.relatedTarget) && !isToolbarHovered) {
-                setHoveredP(null)
-            }
+            setTimeout(() => {
+                const toolbarHovered = document.querySelector(".toolbar-floating")?.matches(":hover")
+                const stillInsideBook = bookRef.current?.contains(document.activeElement)
+                if (!toolbarHovered && !stillInsideBook) {
+                    setHoveredP(null)
+                }
+            }, 200)
         }
 
         book.addEventListener('mouseover', handleMouseOver)
@@ -113,25 +117,26 @@ const VisualizeLei = () => {
 
     return (
         <div className="law_container">
-            <button onClick={save} style={{position: 'relative', left: '200px'}}>Teste Save</button>
+            <button onClick={save} disabled={salvando} style={{position: 'relative', left: '200px'}}>{salvando ? "Salvando..." : "Salvar alterações"}</button>
             
             <div className='book' id='book' ref={bookRef}>
             </div>
             {hoveredP && (
-                <div className="toolbar-floating" style={{
-                    position: 'absolute',
-                    top: hoveredP.getBoundingClientRect().top + window.scrollY - 5,
-                    left: hoveredP.getBoundingClientRect().left + window.scrollY - 35,
-                    zIndex: 10,
-                }}
-                onMouseEnter={() => setIsToolbarHovered(true)}
-                onMouseLeave={() => {
-                    setIsToolbarHovered(false)
-                    setHoveredP(null)
-                }}
+                <div
+                    className="toolbar-floating"
+                    style={{
+                        position: 'absolute',
+                        top: hoveredP.getBoundingClientRect().top + window.scrollY - 5,
+                        left: hoveredP.getBoundingClientRect().left + window.scrollY - 35,
+                        zIndex: 10,
+                    }}
+                    onMouseEnter={() => setIsToolbarHovered(true)}
+                    onMouseLeave={() => {
+                        setIsToolbarHovered(false)
+                        setHoveredP(null)
+                    }}
                 >
-                    <ToolBar2 bookRef={bookRef}/>
-                    
+                    <ToolBar2 bookRef={bookRef} />
                 </div>
             )}
         </div>

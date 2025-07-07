@@ -12,6 +12,7 @@ const ToolBar = () => {
   const [highlightMode, setHighlightMode] = useState(false)
   const [boldMode, setBoldMode] = useState(false)
   const [underlineMode, setUnderlineMode] = useState(false)
+  const [eraseMode, setEraseMode] = useState(false)
   const [alertMsg, setAlertMsg] = useState(null)
 
   // MARCA-TEXTO Função que aplica o destaque à seleção atual
@@ -44,6 +45,10 @@ const ToolBar = () => {
     if(highlightMode) classes.push(toolClasses.highlightMode)
     if(boldMode) classes.push(toolClasses.boldMode)
     if(underlineMode) classes.push(toolClasses.underlineMode)
+
+    //FAZER ESSA FUNÇÃO DE LIMPAAAARRR!!!
+      if(eraseMode) console.log(range.extractContents())
+
     span.className = classes.join(' ')
     span.appendChild(range.extractContents())
     range.insertNode(span)
@@ -62,7 +67,10 @@ const ToolBar = () => {
         break;
       case 'underline':
           setUnderlineMode(prev => !prev)
-      break;
+        break;
+      case 'erase':
+          setEraseMode(prev => !prev)
+        break;
       default:
         break;
     }    
@@ -70,7 +78,7 @@ const ToolBar = () => {
 
   // Liga/desliga o listener global de seleção
   useEffect(() => {
-    const isActive = highlightMode || boldMode || underlineMode
+    const isActive = highlightMode || boldMode || underlineMode || eraseMode
     if (isActive) {
       document.addEventListener('mouseup', handleTool)
     } 
@@ -78,7 +86,7 @@ const ToolBar = () => {
     return () => {
       document.removeEventListener('mouseup', handleTool)
     }
-  }, [highlightMode, boldMode, underlineMode])
+  }, [highlightMode, boldMode, underlineMode, eraseMode])
 
   return (
     <div className='toolbar'>
@@ -87,7 +95,7 @@ const ToolBar = () => {
         <button onClick={() => toggleTool('highlighter')} style={{ backgroundColor: highlightMode ? "#ffd" : "" }}><PiHighlighterFill /></button>
         <button onClick={() => toggleTool('bold')} style={{ backgroundColor: boldMode ? "#d8d8ff" : "" }}><ImBold /></button>
         <button onClick={() => toggleTool('underline')} style={{ backgroundColor: underlineMode ? "#d8d8ff" : "" }}><MdFormatUnderlined /></button>
-        <button><PiEraserFill /></button>
+        <button onClick={() => toggleTool('erase')} style={{ backgroundColor: eraseMode ? "#d8d8ff" : "" }}><PiEraserFill /></button>
         <button><BiSolidCommentEdit /></button>
         <button><CgFormatStrike /></button>
       </div>
