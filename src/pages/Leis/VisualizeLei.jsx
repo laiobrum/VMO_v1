@@ -23,11 +23,6 @@ const VisualizeLei = () => {
 
     //Salva alterações ao apertar botão
     const save = useSaveUserAlterations( {bookRef, userId: user?.uid, leiId } )
-    const testeSave = () => {
-        let texto = bookRef.current.innerHTML
-        console.log(texto);
-        save()
-    }
 
     useEffect(() => {
         if (!lei?.textoRenderizado) return
@@ -118,7 +113,7 @@ const VisualizeLei = () => {
 
     return (
         <div className="law_container">
-            <button onClick={testeSave} style={{position: 'relative', left: '200px'}}>Teste Save</button>
+            <button onClick={save} style={{position: 'relative', left: '200px'}}>Teste Save</button>
             
             <div className='book' id='book' ref={bookRef}>
             </div>

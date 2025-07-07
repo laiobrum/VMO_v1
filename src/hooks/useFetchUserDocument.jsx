@@ -17,6 +17,7 @@ export const useFetchUserDocument = ({ docCollection, docId, userId }) => {
         setError(null)
 
         try {
+            //Se existe anotação na lei, pega aqui
             const anotRef = doc(db, "anotacoesUsuario", `${userId}_${docId}`)
             const anotSnap = await getDoc(anotRef)
 
