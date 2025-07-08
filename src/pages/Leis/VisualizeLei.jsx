@@ -5,6 +5,7 @@ import ToolBar2 from "../../components/ToolBar2"
 import { useAuthValue } from "../../context/AuthContext"
 import { useSaveUserAlterations } from "../../hooks/useSaveUserAlterations"
 import { useFetchUserDocument } from "../../hooks/useFetchUserDocument"
+import ToolBar from "../../components/ToolBar"
 
 const VisualizeLei = () => {
     const { leiId } = useParams()
@@ -116,8 +117,14 @@ const VisualizeLei = () => {
     if (error) return <p>Ocorreu algum erro</p>
 
     return (
+        <>
+        
         <div className="law_container">
-            <button onClick={save} disabled={salvando} style={{position: 'relative', left: '200px'}}>{salvando ? "Salvando..." : "Salvar alterações"}</button>
+            <div className="toolContainer">
+            <button onClick={save} disabled={salvando} style={{position: 'absolute', left: '200px', top: '0px'}}>{salvando ? "Salvando..." : "Salvar alterações"}</button>
+                <ToolBar bookRef={bookRef} />
+            </div>
+            
             
             <div className='book' id='book' ref={bookRef}>
             </div>
@@ -140,6 +147,7 @@ const VisualizeLei = () => {
                 </div>
             )}
         </div>
+        </>
     )
 }
 

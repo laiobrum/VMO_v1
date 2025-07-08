@@ -1,12 +1,12 @@
 .toolbar {
-  position: relative;
-  top: 45px;
+  position: absolute;
   opacity: 0.9;
 }
 .toolbar:hover {
   opacity: 1;
 }
 .toolContainer {
+    top: 7px;
     display: flex;
     justify-content: center;
     align-items: center; /* opcional */
