@@ -116,9 +116,7 @@ const VisualizeLei = () => {
     if (loading) return <p>Carregando...</p>
     if (error) return <p>Ocorreu algum erro</p>
 
-    return (
-        <>
-        
+    return (        
         <div className="law_container">
             <div className="toolContainer">
             <button onClick={save} disabled={salvando} style={{position: 'absolute', left: '200px', top: '0px'}}>{salvando ? "Salvando..." : "Salvar alterações"}</button>
@@ -147,7 +145,6 @@ const VisualizeLei = () => {
                 </div>
             )}
         </div>
-        </>
     )
 }
 

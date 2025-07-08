@@ -1,9 +1,8 @@
 
 //NÃO TÁ DANDO CERTO!
-//1. PEDIR PARA CHAT ME AJUDAR A DEBBUGAR
+//1. IMPEDIR QUE DESFAÇA O SPAN DO ARTIGO - ART. 1º
 //2. REFINAR A DETERCÇÃO DE MARCAÇÕES PARCIALMENTE SOBREPOSTAS
 //3. IMPLEMENTAR MARCAÇÕES ANINHADAS
-//4. TORNAR O CÓDIGO MAIS MODULAR
 
 
 
@@ -13,16 +12,18 @@ import { BiSolidCommentEdit } from "react-icons/bi";
 import { CgFormatStrike } from "react-icons/cg";
 import '../pages/lei.css'
 import { ImBold } from 'react-icons/im';
+import { IoMdSave } from "react-icons/io";
 import { MdFormatUnderlined } from 'react-icons/md';
 import './ToolBar.css'
 import AlertMessage from './AlertMessage';
+import { useToggleTool } from '../hooks/useToggleTool';
 
 const ToolBar = ({bookRef}) => {
-  const [highlightMode, setHighlightMode] = useState(false)
-  const [boldMode, setBoldMode] = useState(false)
-  const [underlineMode, setUnderlineMode] = useState(false)
-  const [eraseMode, setEraseMode] = useState(false)
   const [alertMsg, setAlertMsg] = useState(null)
+
+  //HOOKS
+  //Seleção da ferramenta a ser usada
+  const { highlightMode, boldMode, underlineMode, eraseMode, toggleTool } = useToggleTool()
 
   //Conserta o texto após a remoção das marcações
   const cleanTextNodes = (parent) => {
@@ -74,7 +75,7 @@ const ToolBar = ({bookRef}) => {
       return
     }
 
-    // Apagar marcação
+    // Apagar marcação por seleção
     if (eraseMode) {
       const contents = range.cloneContents()
       const spans = contents.querySelectorAll('span.yellowHL, span.boldTxt, span.underlineTxt')
@@ -127,31 +128,7 @@ const ToolBar = ({bookRef}) => {
     return null
   }
 
-  // Liga/desliga o modo marcação - erase desliga os outros, bem como os outros desligam o erase
-  const toggleTool = (tool) => {
-    switch (tool) {
-      case 'highlighter':
-          setEraseMode(false)
-          setHighlightMode(prev => !prev)
-        break;
-      case 'bold':
-          setEraseMode(false)
-          setBoldMode(prev => !prev)
-        break;
-      case 'underline':
-          setEraseMode(false)
-          setUnderlineMode(prev => !prev)
-        break;
-      case 'erase':
-          setHighlightMode(false)
-          setBoldMode(false)
-          setUnderlineMode(false)
-          setEraseMode(prev => !prev)
-        break;
-      default:
-        break;
-    }    
-  }
+
 
   // REGISTRA O LISTENER GLOBAL DE SELEÇÃO (MANTÉM FUNCIONALIDADE DE MARCAÇÃO)
   useEffect(() => {
@@ -188,20 +165,24 @@ const ToolBar = ({bookRef}) => {
   }, [eraseMode, bookRef])
 
   return (
+    <>
     <div className='toolbar'>
-      <div className='toolContainer'>
-      {/* ESTA TOOLBAR FUNCIONA PARA ACIONAR TODA A VIEW OU ENTÃO COMANDOS TOGGLE! */}
-        <button onClick={() => toggleTool('highlighter')} style={{ backgroundColor: highlightMode ? "#ffd" : "" }}><PiHighlighterFill /></button>
-        <button onClick={() => toggleTool('bold')} style={{ backgroundColor: boldMode ? "#d8d8ff" : "" }}><ImBold /></button>
-        <button onClick={() => toggleTool('underline')} style={{ backgroundColor: underlineMode ? "#d8d8ff" : "" }}><MdFormatUnderlined /></button>
-        <button onClick={() => toggleTool('erase')} style={{ backgroundColor: eraseMode ? "#d8d8ff" : "" }}><PiEraserFill /></button>
-        <button><BiSolidCommentEdit /></button>
-        <button><CgFormatStrike /></button>
-      </div>
-      <div className='toolContainer'>
-          {alertMsg && (<AlertMessage message={alertMsg} onClose={()=>setAlertMsg(null)} />)}
-      </div>
+        <div className='toolContainer'>
+        {/* ESTA TOOLBAR FUNCIONA PARA ACIONAR TODA A VIEW OU ENTÃO COMANDOS TOGGLE! */}
+          <button className='btnTool' title='Marca-texto' onClick={() => toggleTool('highlighter')} style={{ backgroundColor: highlightMode ? "rgba(255, 255, 0, 0.484)" : "", color: highlightMode ? "black" : "inherit"}}><PiHighlighterFill /> </button>
+          <button className='btnTool' title='Negrito' onClick={() => toggleTool('bold')} style={{ backgroundColor: boldMode ? "#4850ef" : "", color: boldMode ? "#ffffff" : "inherit" }}><ImBold /></button>
+          <button className='btnTool' title='Sublinhado' onClick={() => toggleTool('underline')} style={{ backgroundColor: underlineMode ? "#4850ef" : "", color: underlineMode ? "#ffffff" : "inherit"}}><MdFormatUnderlined /></button>
+          <button className='btnTool' title='Apagar marcações' onClick={() => toggleTool('erase')} style={{ backgroundColor: eraseMode ? "#4850ef" : "", color: eraseMode ? "#ffffff" : "inherit"}}><PiEraserFill /></button>
+          <button className='btnTool' title='Exibir comentários'><BiSolidCommentEdit /></button>
+          <button className='btnTool' title='Exibir texto revogado'><CgFormatStrike /></button>
+          <button className='btnTool' title='As alterações são salvas automaticamente a cada 30 segundos'><IoMdSave /></button>
+        </div>
     </div>
+    <div className='alertContainer'>
+          {alertMsg && (<AlertMessage message={alertMsg} onClose={()=>setAlertMsg(null)} />)}
+    </div>
+    </>
+    
   )
 }
 

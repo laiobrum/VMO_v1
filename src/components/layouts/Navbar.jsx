@@ -11,6 +11,8 @@ const Navbar = () => {
   const dropdownRef = useRef(null)
   const {user} = useAuthValue()
   const {logout} = useAuthentication()
+  const location = useLocation()
+  const isOnLawPage = /^\/leis\/[^/]+$/.test(location.pathname)
 
   const toggleDropDown = () => { setDropdownOpen(prev => !prev) }
 

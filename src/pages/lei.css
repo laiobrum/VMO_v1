@@ -17,6 +17,7 @@ p:hover {
 }
 ul {
   margin: 0;
+  padding: 0;
   list-style-type: none;
   text-decoration: none;
   gap: 30px;
