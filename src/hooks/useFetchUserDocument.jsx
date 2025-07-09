@@ -4,7 +4,7 @@ import { doc, getDoc } from "firebase/firestore"
 import { useEffect, useState } from "react"
 import { db } from "../firebase/config"
 
-export const useFetchUserDocument = ({ docCollection, docId, userId }) => {
+export const useFetchUserDocument = ({ docCollection, userId, subCollection, leiId }) => {
     const [document, setDocument] = useState(null)
     const [error, setError] = useState(null)
     const [loading, setLoading] = useState(false)
@@ -18,14 +18,14 @@ export const useFetchUserDocument = ({ docCollection, docId, userId }) => {
 
         try {
             //Se existe anotação na lei, pega aqui
-            const anotRef = doc(db, "anotacoesUsuario", `${userId}_${docId}`)
+            const anotRef = doc(db, docCollection, userId, subCollection, leiId)
             const anotSnap = await getDoc(anotRef)
 
             if (!isCancelled && anotSnap.exists()) {
                 const data = anotSnap.data()
                 if (data.textoEditado !== "") {
                     setDocument({
-                        id: `${userId}_${docId}`,
+                        id: `${userId}_${leiId}`,
                         textoRenderizado: data.textoEditado
                     })
                     return
@@ -33,7 +33,7 @@ export const useFetchUserDocument = ({ docCollection, docId, userId }) => {
             }
 
             // Se não existe anotação ou textoEditado é vazio, busca a lei original
-            const leiRef = doc(db, docCollection, docId)
+            const leiRef = doc(db, 'leis', leiId)
             const leiSnap = await getDoc(leiRef)
 
             if (!isCancelled && leiSnap.exists()) {
@@ -54,12 +54,12 @@ export const useFetchUserDocument = ({ docCollection, docId, userId }) => {
                 }
             }
 
-            if (userId && docId) loadData()
+            if (userId && leiId) loadData()
 
             return () => {
                 isCancelled = true
             }
-        }, [docCollection, docId, userId])
+        }, [docCollection, leiId, userId, subCollection])
 
     return { document, loading, error }
 }

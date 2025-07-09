@@ -2,7 +2,7 @@ import { Link, NavLink } from "react-router-dom"
 import { useFetchDocuments } from "../hooks/useFetchDocuments"
 
 const Home = () => {  
-  const { documents: leis, loading } = useFetchDocuments('leis')
+  const { documents: leis, loading } = useFetchDocuments('leis') 
 
   return (
     <div>

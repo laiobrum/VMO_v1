@@ -13,8 +13,9 @@ export const useSaveUserAlterations = ({ bookRef, userId, leiId }) => {
       )
       const html = paragraphs.map(p => p.outerHTML).join("\n")
 
-      const ref = doc(db, "users", userId, "anotacoesUsuario", leiId)
+      const ref = doc(db, "anotacoesUsuario", `${userId}_${leiId}`)
       await setDoc(ref, {
+        userId,
         leiId,
         textoEditado: html,
         atualizadoEm: new Date()

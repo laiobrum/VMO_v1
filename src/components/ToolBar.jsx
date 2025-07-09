@@ -4,10 +4,9 @@
 //2. REFINAR A DETERCÇÃO DE MARCAÇÕES PARCIALMENTE SOBREPOSTAS
 //3. IMPLEMENTAR MARCAÇÕES ANINHADAS
 
-
-
 import React, { useEffect, useState } from 'react'
 import { PiEraserFill, PiHighlighterFill } from "react-icons/pi";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { BiSolidCommentEdit } from "react-icons/bi";
 import { CgFormatStrike } from "react-icons/cg";
 import '../pages/lei.css'
@@ -17,14 +16,16 @@ import { MdFormatUnderlined } from 'react-icons/md';
 import './ToolBar.css'
 import AlertMessage from './AlertMessage';
 import { useToggleTool } from '../hooks/useToggleTool';
+import { useSaveUserAlterations } from '../hooks/useSaveUserAlterations';
 
-const ToolBar = ({bookRef}) => {
+const ToolBar = ({bookRef, user, leiId}) => {
   const [alertMsg, setAlertMsg] = useState(null)
 
   //HOOKS
+  //Salva alterações ao apertar botão
+  const {save, salvando} = useSaveUserAlterations( {bookRef, userId: user?.uid, leiId } )
   //Seleção da ferramenta a ser usada
   const { highlightMode, boldMode, underlineMode, eraseMode, toggleTool } = useToggleTool()
-
   //Conserta o texto após a remoção das marcações
   const cleanTextNodes = (parent) => {
     const textContent = Array.from(parent.childNodes)
@@ -168,14 +169,18 @@ const ToolBar = ({bookRef}) => {
     <>
     <div className='toolbar'>
         <div className='toolContainer'>
-        {/* ESTA TOOLBAR FUNCIONA PARA ACIONAR TODA A VIEW OU ENTÃO COMANDOS TOGGLE! */}
-          <button className='btnTool' title='Marca-texto' onClick={() => toggleTool('highlighter')} style={{ backgroundColor: highlightMode ? "rgba(255, 255, 0, 0.484)" : "", color: highlightMode ? "black" : "inherit"}}><PiHighlighterFill /> </button>
-          <button className='btnTool' title='Negrito' onClick={() => toggleTool('bold')} style={{ backgroundColor: boldMode ? "#4850ef" : "", color: boldMode ? "#ffffff" : "inherit" }}><ImBold /></button>
-          <button className='btnTool' title='Sublinhado' onClick={() => toggleTool('underline')} style={{ backgroundColor: underlineMode ? "#4850ef" : "", color: underlineMode ? "#ffffff" : "inherit"}}><MdFormatUnderlined /></button>
-          <button className='btnTool' title='Apagar marcações' onClick={() => toggleTool('erase')} style={{ backgroundColor: eraseMode ? "#4850ef" : "", color: eraseMode ? "#ffffff" : "inherit"}}><PiEraserFill /></button>
+          <div className='mtContainer'>
+            <button className={`mt2 btnMarcaTexto ${highlightMode ? 'btnMarcaTextoClicked' : ""}`} title='Marca-texto' onClick={() => toggleTool('highlighter')}><div className='colorMT color2MT'></div> <PiHighlighterFill /> </button>
+            <button className={`mt3 btnMarcaTexto ${highlightMode ? 'btnMarcaTextoClicked' : ""}`} title='Marca-texto' onClick={() => toggleTool('highlighter')}><div className='colorMT color3MT'></div> <PiHighlighterFill /> </button>
+            <button className={`mt1 btnMarcaTexto ${highlightMode ? 'btnMarcaTextoClicked' : ""}`} title='Marca-texto' onClick={() => toggleTool('highlighter')}><div className='colorMT color1MT'></div> <PiHighlighterFill /> </button>
+          </div>
+          <button className={`btnTool ${boldMode ? "btnToolClicked" : ""}`} title='Negrito' onClick={() => toggleTool('bold')} ><ImBold /></button>
+          <button className={`btnTool ${underlineMode ? "btnToolClicked" : ""}`} title='Sublinhado' onClick={() => toggleTool('underline')}><MdFormatUnderlined /></button>
+          <button className={`btnTool ${eraseMode ? "btnToolClicked" : ""}`} title='Apagar marcações' onClick={() => toggleTool('erase')}><PiEraserFill /></button>
+          
           <button className='btnTool' title='Exibir comentários'><BiSolidCommentEdit /></button>
           <button className='btnTool' title='Exibir texto revogado'><CgFormatStrike /></button>
-          <button className='btnTool' title='As alterações são salvas automaticamente a cada 30 segundos'><IoMdSave /></button>
+          <button className='btnTool' title='As alterações são salvas automaticamente a cada 30 segundos' onClick={save} disabled={salvando} >{salvando ? <AiOutlineLoading3Quarters className='loadingIcon' /> :<IoMdSave />}</button>
         </div>
     </div>
     <div className='alertContainer'>

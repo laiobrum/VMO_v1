@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react"
-import { useParams } from "react-router-dom"
+import { NavLink, useParams } from "react-router-dom"
 import '../lei.css'
 import ToolBar2 from "../../components/ToolBar2"
 import { useAuthValue } from "../../context/AuthContext"
-import { useSaveUserAlterations } from "../../hooks/useSaveUserAlterations"
 import { useFetchUserDocument } from "../../hooks/useFetchUserDocument"
 import ToolBar from "../../components/ToolBar"
+import { useFetchDocuments } from "../../hooks/useFetchDocuments"
 
 const VisualizeLei = () => {
     const { leiId } = useParams()
@@ -15,15 +15,16 @@ const VisualizeLei = () => {
     const [hoveredP, setHoveredP] = useState(null)
     const [isToolbarHovered, setIsToolbarHovered] = useState(false)
     
+    //HOOKS:
     //Fetch dos dados - pega a lei alterada pelo usuário, se não tiver, pega a lei original - coloca no estado "Lei"
     const {document: lei, loading, error} = useFetchUserDocument({
-        docCollection: 'leis',
-        docId: leiId,
-        userId: user?.uid
+        docCollection: 'users',
+        userId: user?.uid,
+        subCollection: 'anotacoesUsuario',
+        leiId        
     })
-
-    //Salva alterações ao apertar botão
-    const {save, salvando} = useSaveUserAlterations( {bookRef, userId: user?.uid, leiId } )
+    //Fetch de todas as leis:
+    const {documents: leis} = useFetchDocuments('leis')
 
     useEffect(() => {
         if (!lei?.textoRenderizado) return
@@ -118,14 +119,21 @@ const VisualizeLei = () => {
 
     return (        
         <div className="law_container">
+            {/* TOOLBAR fixa */}
             <div className="toolContainer">
-            <button onClick={save} disabled={salvando} style={{position: 'absolute', left: '200px', top: '0px'}}>{salvando ? "Salvando..." : "Salvar alterações"}</button>
-                <ToolBar bookRef={bookRef} />
+                <ToolBar bookRef={bookRef} user={user} leiId={leiId} />
+                {/* BARRA DE LEIS */}
+                <div className="lawSideBar">
+                    {leis.map((lei)=>(
+                        <NavLink className="lawItem" to={`/leis/${lei.id}`}><div>{lei.title}</div></NavLink>
+                    ))}
+                </div>
             </div>
             
-            
-            <div className='book' id='book' ref={bookRef}>
-            </div>
+            {/* CONTAINER em que a lei vai ser carregada */}
+            <div className='book' id='book' ref={bookRef}></div>
+
+            {/* TOOLBAR2 - flutuante */}
             {hoveredP && (
                 <div
                     className="toolbar-floating"
@@ -144,6 +152,8 @@ const VisualizeLei = () => {
                     <ToolBar2 bookRef={bookRef} />
                 </div>
             )}
+
+            
         </div>
     )
 }
