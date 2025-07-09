@@ -125,7 +125,7 @@ const VisualizeLei = () => {
                 {/* BARRA DE LEIS */}
                 <div className="lawSideBar">
                     {leis.map((lei)=>(
-                        <NavLink className="lawItem" to={`/leis/${lei.id}`}><div>{lei.title}</div></NavLink>
+                        <NavLink key={lei.id} className="lawItem" to={`/leis/${lei.id}`}><div>{lei.title}</div></NavLink>
                     ))}
                 </div>
             </div>

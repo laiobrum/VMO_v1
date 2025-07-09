@@ -105,7 +105,13 @@
 
 /* FUNCIONALIDADES */
 .yellowHL {
-    background-color: yellow;
+    background-color: rgba(255, 255, 0, 0.585);
+}
+.greenHL {
+    background-color: rgba(1, 255, 1, 0.515);
+}
+.pinkHL {
+    background-color: rgba(255, 0, 43, 0.297);
 }
 .boldTxt {
   font-weight: bold;

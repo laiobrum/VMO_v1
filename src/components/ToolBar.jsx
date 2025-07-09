@@ -25,7 +25,7 @@ const ToolBar = ({bookRef, user, leiId}) => {
   //Salva alterações ao apertar botão
   const {save, salvando} = useSaveUserAlterations( {bookRef, userId: user?.uid, leiId } )
   //Seleção da ferramenta a ser usada
-  const { highlightMode, boldMode, underlineMode, eraseMode, toggleTool } = useToggleTool()
+  const { highlightColor, boldMode, underlineMode, eraseMode, toggleTool } = useToggleTool()
   //Conserta o texto após a remoção das marcações
   const cleanTextNodes = (parent) => {
     const textContent = Array.from(parent.childNodes)
@@ -102,15 +102,17 @@ const ToolBar = ({bookRef, user, leiId}) => {
 
     //Adicionar marcações, amerela, bold e underline
     const span = document.createElement('span')
-    const toolClasses = {
-      highlightMode: 'yellowHL',
-      boldMode: 'boldTxt',
-      underlineMode: 'underlineTxt'
-    }
     let classes = []
-    if(highlightMode) classes.push(toolClasses.highlightMode)
-    if(boldMode) classes.push(toolClasses.boldMode)
-    if(underlineMode) classes.push(toolClasses.underlineMode)
+    if(highlightColor) {
+      const highlightClassMap = {
+        yellow: 'yellowHL',
+        green: 'greenHL',
+        pink: 'pinkHL'
+      }
+      classes.push(highlightClassMap[highlightColor])
+    } 
+    if(boldMode) classes.push('boldTxt')
+    if(underlineMode) classes.push('underlineTxt')
 
     span.className = classes.join(' ')
     span.appendChild(range.extractContents())
@@ -133,7 +135,7 @@ const ToolBar = ({bookRef, user, leiId}) => {
 
   // REGISTRA O LISTENER GLOBAL DE SELEÇÃO (MANTÉM FUNCIONALIDADE DE MARCAÇÃO)
   useEffect(() => {
-    const isActive = highlightMode || boldMode || underlineMode || eraseMode
+    const isActive = highlightColor || boldMode || underlineMode || eraseMode
     if (isActive) {
       document.addEventListener('mouseup', handleTool)
     }
@@ -141,7 +143,7 @@ const ToolBar = ({bookRef, user, leiId}) => {
     return () => {
       document.removeEventListener('mouseup', handleTool)
     }
-  }, [highlightMode, boldMode, underlineMode, eraseMode])
+  }, [highlightColor, boldMode, underlineMode, eraseMode])
 
   // REGISTRA O CLICK PARA APAGAR SPAN (SOMENTE EM eraseMode)
   useEffect(() => {
@@ -170,9 +172,9 @@ const ToolBar = ({bookRef, user, leiId}) => {
     <div className='toolbar'>
         <div className='toolContainer'>
           <div className='mtContainer'>
-            <button className={`mt2 btnMarcaTexto ${highlightMode ? 'btnMarcaTextoClicked' : ""}`} title='Marca-texto' onClick={() => toggleTool('highlighter')}><div className='colorMT color2MT'></div> <PiHighlighterFill /> </button>
-            <button className={`mt3 btnMarcaTexto ${highlightMode ? 'btnMarcaTextoClicked' : ""}`} title='Marca-texto' onClick={() => toggleTool('highlighter')}><div className='colorMT color3MT'></div> <PiHighlighterFill /> </button>
-            <button className={`mt1 btnMarcaTexto ${highlightMode ? 'btnMarcaTextoClicked' : ""}`} title='Marca-texto' onClick={() => toggleTool('highlighter')}><div className='colorMT color1MT'></div> <PiHighlighterFill /> </button>
+            <button className={`mt3 btnMarcaTexto ${highlightColor === 'pink' ? 'btnMarcaTextoClicked' : ""}`} title='Marca-texto' onClick={() => toggleTool('highlighter', 'pink')}><div className='colorMT color3MT'></div> <PiHighlighterFill /> </button>
+            <button className={`mt2 btnMarcaTexto ${highlightColor === 'green' ? 'btnMarcaTextoClicked' : ""}`} title='Marca-texto' onClick={() => toggleTool('highlighter', 'green')}><div className='colorMT color2MT'></div> <PiHighlighterFill /> </button>
+            <button className={`mt1 btnMarcaTexto ${highlightColor === 'yellow' ? 'btnMarcaTextoClicked' : ""}`} title='Marca-texto' onClick={() => toggleTool('highlighter', 'yellow')}><div className='colorMT color1MT'></div> <PiHighlighterFill /> </button>
           </div>
           <button className={`btnTool ${boldMode ? "btnToolClicked" : ""}`} title='Negrito' onClick={() => toggleTool('bold')} ><ImBold /></button>
           <button className={`btnTool ${underlineMode ? "btnToolClicked" : ""}`} title='Sublinhado' onClick={() => toggleTool('underline')}><MdFormatUnderlined /></button>
