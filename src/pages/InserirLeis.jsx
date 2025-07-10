@@ -28,6 +28,12 @@ function InserirLeis() {
     const fixOriginalTags = (e) => {
         e.preventDefault()
         let textoLimpo = texto
+
+
+        PAREI AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+        AGORA O PROBLEMA É QUE OS STRIKES ESTÃO SENDO APAGADOS, QUANDO NÃO DEVEM
+        ENTENDER POR QUE O STRIKE DO ART. 246 NÃO É APAGADO, MAS OS STRIKES DE SEUS INCISOS SÃO!
+
             
             //FICAR EM 1º - Extrai <a class="c927"> tags para não atrapalhar o id abaixo (é o ícone de julgados)
             .replace(/<a[^>]*class="c927"[^>]*><\/a>/gi, '')
