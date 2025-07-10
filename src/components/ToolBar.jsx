@@ -1,9 +1,4 @@
 
-//NÃO TÁ DANDO CERTO!
-//1. IMPEDIR QUE DESFAÇA O SPAN DO ARTIGO - ART. 1º
-//2. REFINAR A DETERCÇÃO DE MARCAÇÕES PARCIALMENTE SOBREPOSTAS
-//3. IMPLEMENTAR MARCAÇÕES ANINHADAS
-
 import React, { useEffect, useState } from 'react'
 import { PiEraserFill, PiHighlighterFill } from "react-icons/pi";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
@@ -47,28 +42,56 @@ const ToolBar = ({bookRef, user, leiId}) => {
     const selection = window.getSelection()
     if (!selection || selection.isCollapsed) return
     const range = selection.getRangeAt(0)
-    // Se estamos em modo marcação (não apagando), verificar se já existe marcação
-    if (!eraseMode) {
-      let node = selection.anchorNode
-      while (node && node !== bookRef?.current) {
-        if (
-          node.nodeType === Node.ELEMENT_NODE &&
-          node.tagName === 'SPAN' &&
-          /(yellowHL|boldTxt|underlineTxt)/.test(node.className)
-        ) {
-          setAlertMsg("Já existe uma marcação nesta seleção.")
-          selection.removeAllRanges()
-          return
-        }
-        node = node.parentNode
+
+  // 🔄 VERIFICA SE A SELEÇÃO COMEÇA OU INTERSECTA TRECHO MARCADO
+  const selectionHasMarkings = (selection, range, rootNode) => {
+    // Verifica se ponto inicial da seleção já está dentro de marcação
+    let node = selection.anchorNode
+    while (node && node !== rootNode) {
+      if (
+        node.nodeType === Node.ELEMENT_NODE &&
+        node.tagName === 'SPAN' &&
+        /(yellowHL|greenHL|pinkHL|boldTxt|underlineTxt)/.test(node.className)
+      ) {
+        return true
       }
+      node = node.parentNode
     }
+
+    // Verifica se seleção cruza marcações em qualquer ponto
+    const walker = document.createTreeWalker(
+      range.commonAncestorContainer,
+      NodeFilter.SHOW_ELEMENT,
+      {
+        acceptNode: (node) => {
+          const nodeRange = document.createRange()
+          nodeRange.selectNodeContents(node)
+          if (
+            range.intersectsNode(node) &&
+            node.tagName === 'SPAN' &&
+            /(yellowHL|greenHL|pinkHL|boldTxt|underlineTxt)/.test(node.className)
+          ) {
+            return NodeFilter.FILTER_ACCEPT
+          }
+          return NodeFilter.FILTER_SKIP
+        }
+      }
+    )
+    return walker.nextNode() !== null
+  }
+
+  if (!eraseMode && selectionHasMarkings(selection, range, bookRef?.current)) {
+    setAlertMsg("A seleção inclui partes já marcadas.")
+    selection.removeAllRanges()
+    return
+  }
+    
     // Clona os nós selecionados (com HTML)
     const fragment = range.cloneContents()
     const tempDiv = document.createElement('div')
     tempDiv.appendChild(fragment.cloneNode(true))
     const html = tempDiv.innerHTML
-    //Checa se contém qualquer <p> ou </p> e impede marcação 
+    //Impede marcação de cruza parágrafos
     const containsParagraph = /<\/?p>/i.test(html)
     if(containsParagraph) {
       setAlertMsg("Você não pode marcar mais de um dispositivo de uma vez.")
@@ -79,7 +102,7 @@ const ToolBar = ({bookRef, user, leiId}) => {
     // Apagar marcação por seleção
     if (eraseMode) {
       const contents = range.cloneContents()
-      const spans = contents.querySelectorAll('span.yellowHL, span.boldTxt, span.underlineTxt')
+      const spans = contents.querySelectorAll('span.yellowHL, span.greenHL, span.pinkHL, span.boldTxt, span.underlineTxt')
       if(spans.length === 0) {
         setAlertMsg("Não há marcação para apagar nesta seleção")
         selection.removeAllRanges()
@@ -122,7 +145,7 @@ const ToolBar = ({bookRef, user, leiId}) => {
   }
 
   const findMatchingSpanInDom = (container, text) => {
-    const spans = container.querySelectorAll('span.yellowHL, span.boldTxt, span.underlineTxt')
+    const spans = container.querySelectorAll('span.yellowHL, span.greenHL, span.pinkHL, span.boldTxt, span.underlineTxt')
     for (let span of spans) {
       if (span.textContent === text) {
         return span
@@ -151,7 +174,7 @@ const ToolBar = ({bookRef, user, leiId}) => {
 
     const handleClickOnSpan = (e) => {
       const span = e.target
-      if (span.tagName === 'SPAN' && /(yellowHL|boldTxt|underlineTxt)/.test(span.className)) {
+      if (span.tagName === 'SPAN' && /(yellowHL|greenHL|pinkHL|boldTxt|underlineTxt)/.test(span.className)) {
         const parent = span.parentNode
         const textNode = document.createTextNode(span.textContent)
         span.replaceWith(textNode)

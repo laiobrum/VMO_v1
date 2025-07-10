@@ -5,6 +5,7 @@ const AlertMessage = ({message, duration = 3000, onClose}) => {
 
     useEffect(()=> {
         const timer = setTimeout(()=> {
+            
             setVisible(false)
             if(onClose) onClose()
         }, duration)
@@ -14,7 +15,7 @@ const AlertMessage = ({message, duration = 3000, onClose}) => {
 
     if(!visible) return null
   return (
-    <div className='alertMsg'>{message}</div>
+    <div className='alertMsg fade'>{message}</div>
   )
 }
 

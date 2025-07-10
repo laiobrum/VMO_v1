@@ -65,6 +65,7 @@
 .btnMarcaTextoClicked {
   background-color: #4850ef;;
   color: rgb(255, 255, 0);
+  opacity: 1!important;
 }
 .colorMT {
   position: absolute;
@@ -133,6 +134,18 @@
   position: absolute;
   bottom: 10px;
   background-color: none;
+}
+.fade { animation: desaparecer 3s ease-in-out forwards; }
+@keyframes desaparecer {
+  0% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 /* TOOLBAR2 */
 .toolbar2 {

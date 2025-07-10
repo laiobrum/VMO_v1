@@ -42,7 +42,7 @@ const Navbar = () => {
               <li className='dropdown' ref={dropdownRef}><span className='dropdown-toggle' onClick={toggleDropDown}><BsPersonFill className='profileIcon' /> {user.displayName} <MdOutlineArrowDropDown /></span>
 
                 <ul className={`dropdown-menu ${dropdownOpen ? 'open' : ''}`}>
-                  <NavLink className='a1' to='/profile' onClick={() => handleItemClick()}><li>Meu Painel</li></NavLink>
+                  <NavLink className='a1' to='/profile' onClick={() => handleItemClick()}><li>Meu Painel </li></NavLink>
                   <NavLink className='a1' to='/insertlaws'><li>Incluir leis</li></NavLink>
                   <li className='btn3' onClick={() => handleItemClick(logout)}>Sair</li>
                 </ul>

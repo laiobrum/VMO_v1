@@ -24,7 +24,34 @@ function InserirLeis() {
         }
     }
 
-    const formatLaw = (e) => {
+    //EDITA AS TAGS ORIGINAIS DO SITE DO PLANALTO
+    const fixOriginalTags = (e) => {
+        e.preventDefault()
+        let textoLimpo = texto
+            //Tags
+            .replace(/<(font|span|u|sup|i|small|b)[^>]*>/gi, '')//Remove <font> e <span>
+            .replace(/<\/(font|span|u|sup|i|small|b)>/gi, '')//Remove </font> e </span>
+            .replace(/<(\w+)[^>]*>\s*<\/\1>/gi, '')//Remove tags vazias
+
+            //Atributos de tags
+            .replace(/<p[^>]*>/gi, '<p>')
+
+            //Espaços e quebras
+            .replace(/ {2,}/g, ' ')//Remove espaço
+            .replace(/^\s*(&nbsp;)*\s*$/gm, '')//Remove espaço
+            .replace(/&nbsp;/g, '')//Remove &nbsp; sozinho no meio do texto
+            .replace(/\n{2,}/g, '\n') //Remove quebra de linha
+
+            //Extrai as tags <a name=""> e coloca como id dos <p>. Remove as tags <a>, mantendo as que tem href
+            .replace(/<p>\s*<a name="([^"]+)"\s*><\/a>\s*([\s\S]*?)<\/p>/gi, '<p id="$1">$2</p>')
+            
+            
+        setTexto(textoLimpo)
+        return
+    }
+
+    //ARRUMA TAGS DEFEITUOSAS E INCLUI AS MINHAS
+    const fixMyTags = (e) => {
         e.preventDefault()
         setTexto(texto
             //Espaços
@@ -91,7 +118,8 @@ function InserirLeis() {
                     <textarea type="textarea" name="texto" placeholder="Insira todo o texto legal" onChange={(e)=>setTexto(e.target.value)} value={texto} ></textarea>
                 </label>
                 
-                <button onClick={formatLaw} className="btn2">Adicionar HTML</button>&nbsp;&nbsp;
+                <button onClick={fixOriginalTags} className="btn2">Editar tags originais</button>&nbsp;&nbsp;
+                <button onClick={fixMyTags} className="btn2">Adicionar HTML</button>&nbsp;&nbsp;
                 <button onClick={visualize} className="btn2">Pré-visualizar</button>
                 <br />
                 <br />
