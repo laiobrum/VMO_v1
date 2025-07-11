@@ -1,3 +1,18 @@
+/*SANITIZAÇÃO DAS LEIS:
+-
+-
+-
+1. ADAPTAR CÓDIGO PARA CADA UMA DAS LEIS
+2. COMPARAR OS RESULTADOS NO GOOGLE DOCS DO texto original x texto sanitizado 
+    > ctrl+shift+v no docs 
+    > Ferramentas > Comparar documentos
+-
+-           PAREI EM: percebi que no meu teste CPC, nem veio "DAS NORMAS PROCESSUAIS CIVIS" - mas o site do Planalto parou... esperar voltar
+-
+*/
+
+
+
 import { useState } from "react";
 import { db } from '../firebase/config'
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
@@ -27,14 +42,7 @@ function InserirLeis() {
     //EDITA AS TAGS ORIGINAIS DO SITE DO PLANALTO
     const fixOriginalTags = (e) => {
         e.preventDefault()
-        let textoLimpo = texto
-
-
-        PAREI AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
-        AGORA O PROBLEMA É QUE OS STRIKES ESTÃO SENDO APAGADOS, QUANDO NÃO DEVEM
-        ENTENDER POR QUE O STRIKE DO ART. 246 NÃO É APAGADO, MAS OS STRIKES DE SEUS INCISOS SÃO!
-
-            
+        let textoLimpo = texto            
             //FICAR EM 1º - Extrai <a class="c927"> tags para não atrapalhar o id abaixo (é o ícone de julgados)
             .replace(/<a[^>]*class="c927"[^>]*><\/a>/gi, '')
             //FICAR 2º - Extrai as tags <a name=""> e coloca como id dos <p>. Remove as tags <a>, mantendo as que tem href

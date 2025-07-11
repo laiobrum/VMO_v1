@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import './lei.css';
+import '../pages/lei.css';
 
 const TesteLei = () => {
   const [textoCompleto, setTextoCompleto] = useState('');
