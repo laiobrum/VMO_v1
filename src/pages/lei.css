@@ -37,7 +37,6 @@ ul a:hover {
   text-align: center;
   font-weight: bold;
 }
-
 .book {
   max-width: 1200px;
   margin: 0 auto;
@@ -46,7 +45,6 @@ ul a:hover {
   scroll-behavior: smooth;
   box-sizing: border-box;
 }
-
 .page {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -58,7 +56,6 @@ ul a:hover {
   height: auto; /* Altura agora pode variar */
   box-sizing: border-box;
 }
-
 .column {
   font-size: 14px;
   line-height: 1.6;
@@ -67,10 +64,23 @@ ul a:hover {
   padding: 0 4px;
   box-sizing: border-box;
 }
-
 .column p {
   /* margin: 0; */
   line-height: 1.6;
+}
+.numLei {
+  font-weight: bolder;
+}
+.descricao {
+  color: rgb(155, 1, 1);
+  font-weight: bold;
+  text-align: end;
+}
+.preambulo {
+  font-size: x-small;
+}
+.encerramento {
+  font-size: x-small;
 }
 
 

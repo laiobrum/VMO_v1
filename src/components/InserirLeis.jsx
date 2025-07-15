@@ -29,8 +29,9 @@
 import { useState } from "react";
 import { db } from '../firebase/config'
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import CPCtags from '../utils/Leis em HTML/CPC/CPCtags'
-import IndultoTags from '../utils/Leis em HTML/Indulto/IndultoTags'
+
+import {AddIndultoTags, FixIndultoTags} from '../utils/Leis em HTML/Indulto/IndultoTags'
+import { addCFTags, fixCFTags } from "../utils/Leis em HTML/CF/CFtags";
 
 function InserirLeis() {
     const [title, setTitle] = useState('')
@@ -58,81 +59,35 @@ function InserirLeis() {
     const fixOriginalTags = (e) => {
         e.preventDefault()
         /* ARQUIVO REMOVEDOR DE TAGS: */
-        // const textoLimpo = CPCtags(texto)
-        // const textoLimpo = IndultoTags(texto)
+        // const textoLimpo = fixCFTags(texto)
+        const textoLimpo = FixIndultoTags(texto)
+        
+        
 
         /* TESTES - OS TESTES DEVEM SER AQUI, VISTO QUE O VITE NÃO ATUALIZA OS ARQUIVOS REMOVEDORES NA HORA!!! */
-        const textoLimpo = texto
-            //Exclui atributos de <p>
-            .replace(/<p[^>]*>/gi, '<p>')
+        // const textoLimpo = texto
+            
 
-            // //Tags
-            .replace(/<(font|span|u|sup|i|small|table|b|td)[^>]*>/gi, '')//Remove todas as tags inúteis
-            .replace(/<\/(font|span|u|sup|i|small|table|b|td)>/gi, '')//Remove fechamento das tags inúteis
-
-            // Move name="..." da <a> para id="..." do <p>
-            .replace(/<p([^>]*)>\s*<a name="([^"]+)"[^>]*><\/a>([\s\S]*?)<\/p>/gi, '<p id="$2"$1>$3</p>')
-            .replace(/<a[^>]*>([\s\S]*?)<\/a>/gi, '<span>$1</span>')
-
-            //Espaços e quebras
-            .replace(/ {2,}/g, ' ')//Remove espaço
-            .replace(/^\s*(&nbsp;)*\s*$/gm, '')//Remove espaço
-            .replace(/&nbsp;/g, '')//Remove &nbsp; sozinho no meio do texto
-            .replace(/&quot;/g, '')//Remove &nbsp; sozinho no meio do texto
-            // .replace(/\n{2,}/g, '\n') //Remove quebra de linha
-            // .replace(/\s+/g, ' ')//Remove espaço dado com tab
             
         setTexto(textoLimpo)
         return
     }
 
     //ARRUMA TAGS DEFEITUOSAS E INCLUI AS MINHAS
-    const fixMyTags = (e) => {
+    const addMyTags = (e) => {
         e.preventDefault()
-        setTexto(texto
-            //ALTERAR agora que vamos subir tags novas com id
-            //Tentar automatizar envolver a div dos títulos
+        /* ARQUIVO ADICIONADOR DE TAGS: */
+        // const textoLimpo = addCFTags(texto)
+        const textoLimpo = AddIndultoTags(texto)
             
-            //Espaços
-            .replace(/^\s*\n/gm, "")//exclui parágrafos vazios
-            .replace(/^\s*/gm, "")//exclui espaços vazios
 
-            //Números ordinais
-            .replace(/(\d+)º/g, "$1.º")//Coloca na grafia correta "1.º"
 
-            //Art.
-            .replace(/Art\./g, "<p><span>Art.")//span antes do Art.
-            .replace(/(Art\. \d+\.º)/g, "$1</span>")//span nos Art º
-            .replace(/(Art\. \d+\. )/g, "$1</span>")// /Span após o Art.
+            /* TESTES - OS TESTES DEVEM SER AQUI, VISTO QUE O VITE NÃO ATUALIZA OS ARQUIVOS REMOVEDORES NA HORA!!! */
+            // const textoLimpo = texto
 
-            // .replace(/(Art\. \d+\.º)/g, "$1</span>")
-            // .replace(/(Art\. \d+º)/g, "$1.º</span>")// /Span após o Art. º 
-            .replace(/(Art\. \d+-[A-Z]\.)/g, "$1</span>")// /span após "Art. 146-A."
 
-            //§§
-            .replace(/(§ \d+)º/g, "$1.º")//arrumar o § 1.º
-            .replace(/^§\s*(\d+)\s*-\s*/gm, "§ $1. ")//Arruma os § 10 - para § 10.
-            .replace(/^§\s*\d+\.º/gm, match => `<p><span>${match}</span>`)//Adiciona <p> e <span> nos º, só no início do parágrafo
-            .replace(/^§\s*\d+\. /gm, match => `<p><span>${match}</span>`)//Adiciona <p> e <span> nos ., só no início do parágrafo
-            .replace(/Parágrafo único./g, "Parágrafo único.</span>")//inclui /span após pu
 
-            //<p> em todos os parágrafos
-            .replace(/^(\w)/gm, "<p><span>$1")// inclui span e p antes de qualquer parágrafo
-            .replace(/(.+)$/gm, "$1</p>")//adiciona p ao fim de todas as linhas
-
-            //Incisos:
-            // .replace(/ - /g, " - </span>")//adiciona /span após hífens
-            // .replace(/ – /g, " - </span>")//adiciona /span após hífens - ele diferencia os hífens grandes dos pequenos
-            .replace(/<p><span>([IVXLCDM]+)\s*-\s*/gm, "<p><span>$1</span> - ")
-
-            //Alíneas
-            // .replace(/([a-zA-Z])\)/g, "$1)</span>")// adiciona /span após alíneas 'a)'
-            .replace(/<p><span>([a-zA-Z]\))\s*/gm, "<p><span>$1</span> ")
-            
-            //Textos recorrentes
-            .replace(/<p>\s*<\/p>/gm, "")//remove todos os <p></p> vazios
-
-        )
+        setTexto(textoLimpo)
         return 
     }
 
@@ -159,7 +114,7 @@ function InserirLeis() {
                 
                 <div className="btnContainer">
                     <button onClick={fixOriginalTags} className="btn2">Editar tags originais</button>&nbsp;➤&nbsp;
-                    <button onClick={fixMyTags} className="btn2">Adicionar HTML</button>&nbsp;➤&nbsp;
+                    <button onClick={addMyTags} className="btn2">Adicionar HTML</button>&nbsp;➤&nbsp;
                     <button className="btn2">Gerar links</button>&nbsp;➤&nbsp;
                     <button onClick={visualize} className="btn2">Pré-visualizar</button>&nbsp;➤&nbsp;
                     <input className="btn1" type="submit" value="Salvar Lei" />&nbsp;&nbsp;
