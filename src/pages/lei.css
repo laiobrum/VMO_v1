@@ -75,12 +75,18 @@ ul a:hover {
   color: rgb(155, 1, 1);
   font-weight: bold;
   text-align: end;
+  width: 80%;
+  margin-left: auto;
 }
 .preambulo {
   font-size: x-small;
 }
 .encerramento {
   font-size: x-small;
+}
+.leiRef {
+  color: rgb(0, 0, 192);
+  cursor: pointer;
 }
 
 

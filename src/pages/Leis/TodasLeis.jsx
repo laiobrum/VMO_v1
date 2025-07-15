@@ -16,7 +16,7 @@ const TodasLeis = () => {
         <ul>
             {leis.map((lei) => (
                 <li key={lei.id}>
-                    <NavLink to={`/leis/${lei.id}`}>{lei.title}</NavLink>
+                    <NavLink to={`/leis/${lei.id}`}>{lei.aTitle}</NavLink>
                 </li>
             ))}
         </ul>

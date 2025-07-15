@@ -47,6 +47,9 @@ export const AddIndultoTags = (texto) => {
         //Envolver parágrafo único:
         .replace(/(<p[^>]*>)\s*(Parágrafo único\.)/gi, '$1<span class="titles">$2</span>')
 
+        //Adiciona class leiRef ao restante dos <span>, que são os que são referência de lei
+        .replace(/<span>/gi, '<span class="leiRef">')
+
     return texto
 }
 

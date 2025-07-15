@@ -35,6 +35,7 @@ import { addCFTags, fixCFTags } from "../utils/Leis em HTML/CF/CFtags";
 
 function InserirLeis() {
     const [title, setTitle] = useState('')
+    const [numLei, setNumLei] = useState('')
     const [texto, setTexto] = useState('')
 
     const salvarLei = async (e) => {
@@ -42,7 +43,8 @@ function InserirLeis() {
 
         try {
             await addDoc(collection(db, 'leis'), {
-                title: title.trim(),
+                aTitle: title.trim(),
+                numLei: numLei.trim(),
                 texto: texto.trim(),
                 createdAt: serverTimestamp(),
             })
@@ -60,14 +62,29 @@ function InserirLeis() {
         e.preventDefault()
         /* ARQUIVO REMOVEDOR DE TAGS: */
         // const textoLimpo = fixCFTags(texto)
-        const textoLimpo = FixIndultoTags(texto)
+        // const textoLimpo = FixIndultoTags(texto)
         
         
 
         /* TESTES - OS TESTES DEVEM SER AQUI, VISTO QUE O VITE NÃO ATUALIZA OS ARQUIVOS REMOVEDORES NA HORA!!! */
-        // const textoLimpo = texto
-            
+        const textoLimpo = texto
+            //OBSERVAÇÃO: NÃO PODE APERTAR 2X, PQ APAGA O id=""
+            //Exclui atributos de <p>
+            .replace(/<p[^>]*>/gi, '<p>')
 
+            // //Tags
+            .replace(/<(font|span|u|sup|i|small|table|b|td|tbody|strong|tr|blockquote)[^>]*>/gi, '')//Remove todas as tags inúteis
+            .replace(/<\/(font|span|u|sup|i|small|table|b|td|tbody|strong|tr|blockquote)>/gi, '')//Remove fechamento das tags inúteis
+
+            // Move name="..." da <a> para id="..." do <p>
+            .replace(/<p([^>]*)>\s*<a name="([^"]+)"[^>]*><\/a>([\s\S]*?)<\/p>/gi, '<p id="$2"$1>$3</p>')
+            .replace(/<a[^>]*>([\s\S]*?)<\/a>/gi, '<span>$1</span>')
+
+            //Espaços e quebras
+            .replace(/\s{2,}/g, ' ')//Remove espaço
+            .replace(/^\s*(&nbsp;)*\s*$/gm, '')//Remove espaço
+            .replace(/&nbsp;/g, '')//Remove &nbsp; sozinho no meio do texto
+            .replace(/&quot;/g, '')//Remove &nbsp; sozinho no meio do texto
             
         setTexto(textoLimpo)
         return
@@ -103,7 +120,11 @@ function InserirLeis() {
             <form className="formContainer2" onSubmit={salvarLei}>
                 <label className="formControl">
                     <span>Título da lei: </span>
-                    <input type="text" name="title" placeholder="Ex.: Constituição Federal" onChange={(e)=>setTitle(e.target.value)} required />
+                    <input type="text" name="title" placeholder="Ex.: Código Penal - da forma que vai aparecer para o usuário" onChange={(e)=>setTitle(e.target.value)} required />
+                </label>
+                <label className="formControl">
+                    <span>Número da lei: </span>
+                    <input type="text" name="numLei" placeholder="Ex.: DEL2848, D12500, L12850, MP1500" onChange={(e)=>setNumLei(e.target.value)} required />
                 </label>
 
                 {/* Tag TEXTAREA - é igual */}
