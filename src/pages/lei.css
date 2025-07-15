@@ -88,5 +88,8 @@ ul a:hover {
   color: rgb(0, 0, 192);
   cursor: pointer;
 }
+.strikeHidden {
+  display: none;
+}
 
 

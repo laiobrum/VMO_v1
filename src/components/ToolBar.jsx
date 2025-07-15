@@ -15,6 +15,7 @@ import { useSaveUserAlterations } from '../hooks/useSaveUserAlterations';
 
 const ToolBar = ({bookRef, user, leiId}) => {
   const [alertMsg, setAlertMsg] = useState(null)
+  const [showRevogados, setShowRevogadosState] = useState(false)
 
   //HOOKS
   //Salva alterações ao apertar botão
@@ -190,6 +191,18 @@ const ToolBar = ({bookRef, user, leiId}) => {
     }
   }, [eraseMode, bookRef])
 
+  const toggleRevogados = () => {
+    setShowRevogadosState(prev => {
+      const newState = !prev
+      const strikes = bookRef.current?.querySelectorAll('strike')
+      strikes?.forEach(strike => {
+        strike.classList.toggle('strikeHidden', !newState)
+        strike.classList.toggle('strikeVisible', newState)
+      })
+      return newState
+    })
+  }
+
   return (
     <>
     <div className='toolbar'>
@@ -204,7 +217,10 @@ const ToolBar = ({bookRef, user, leiId}) => {
           <button className={`btnTool ${eraseMode ? "btnToolClicked" : ""}`} title='Apagar marcações' onClick={() => toggleTool('erase')}><PiEraserFill /></button>
           
           <button className='btnTool' title='Exibir comentários'><BiSolidCommentEdit /></button>
-          <button className='btnTool' title='Exibir texto revogado'><CgFormatStrike /></button>
+          <button className='btnTool' title='Exibir texto revogado'   onClick={toggleRevogados}> <CgFormatStrike /></button>
+  
+                
+                    
           <button className='btnTool' title='As alterações são salvas automaticamente a cada 30 segundos' onClick={save} disabled={salvando} >{salvando ? <AiOutlineLoading3Quarters className='loadingIcon' /> :<IoMdSave />}</button>
         </div>
     </div>
