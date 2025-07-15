@@ -16,6 +16,8 @@
 import { useState } from "react";
 import { db } from '../firebase/config'
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import CPCtags from '../../Leis em HTML/CPC/CPCtags'
+import IndultoTags from '../../Leis em HTML/Indulto/IndultoTags'
 
 function InserirLeis() {
     const [title, setTitle] = useState('')
@@ -42,27 +44,22 @@ function InserirLeis() {
     //EDITA AS TAGS ORIGINAIS DO SITE DO PLANALTO
     const fixOriginalTags = (e) => {
         e.preventDefault()
-        let textoLimpo = texto
-            //FALTOU (vou ter que fazer à mão): o 2º replace apaga os <p> que não têm <a name=""> para transformar em id. 
-                //Vou ter que corrigir na mão, pq as regras já estão muito complicadas, e são poucas correções
-                //Manter os ids dos títulos e colocar os títulos faltantes entre <p></p>
-
-            //FICAR EM 1º - Extrai <a class="c927"> tags para não atrapalhar o id abaixo (é o ícone de julgados)
-            .replace(/<a[^>]*class="c927"[^>]*><\/a>/gi, '')
-            //FICAR 2º - Extrai as tags <a name=""> e coloca como id dos <p>. Remove as tags <a>, mantendo as que tem href
-            .replace(/<p([^>]*)>[\s\S]*?<a name="([^"]+)"[^>]*>[\s\S]*?<\/a>\s*([\s\S]*?)<\/p>/gi, '<p id="$2"$1>$3</p>')
-            //3º - extrai todos os atributos de <p>
-            .replace(/<p[^>]*id="([^"]+)"[^>]*>/gi, '<p id="$1">')
-
-            //Tags
-            .replace(/<(font|span|u|sup|i|small|b)[^>]*>/gi, '')//Remove todas as tags inúteis
-            .replace(/<\/(font|span|u|sup|i|small|b)>/gi, '')//Remove fechamento das tags inúteis
-
-            //Espaços e quebras
-            .replace(/ {2,}/g, ' ')//Remove espaço
-            .replace(/^\s*(&nbsp;)*\s*$/gm, '')//Remove espaço
-            .replace(/&nbsp;/g, '')//Remove &nbsp; sozinho no meio do texto
-            .replace(/\n{2,}/g, '\n') //Remove quebra de linha
+        // const textoLimpo = CPCtags(texto)
+        const textoLimpo = IndultoTags(texto)
+        FAZEEEEEEEEEEEEEEEEEEEEEEEEEEERRR:
+            > Botão salvar lei para consulta de referência cruzada - chatGPT disse que minha estrutura de dados tem que ser:
+                    /laws/{lawId}/articles/{articleId}
+                        {
+                          html: "<p><span class='titles'>Art. 33.</span> ...",
+                          plainText: "Art. 33. A pena será aplicada..."
+                        }
+            > Botão para gerar automaticamente os links nas leis: chatGPT > VMO - data structure > 1. 📦 Padronize a Identificação de Leis
+            > Botão para salvar lei para pesquisa de palavra-chave - ver fazer estrutura dos dados para MeiliSearch
+            > Botão salvar lei para original do usuário: 
+                                                        <div id="a1ii">
+                                                            <p class="tx"> Lorem ipsum </p>
+                                                            <p class="cmt"></p>
+                                                        </div>
             
         setTexto(textoLimpo)
         return
