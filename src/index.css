@@ -105,4 +105,7 @@ h2 {
 .btn3:hover {
   color: var(--btnColor-2);
 }
+.btnContainer {
+  color: var(--btnColor-2);
+}
 
