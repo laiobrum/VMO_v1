@@ -194,10 +194,9 @@ const ToolBar = ({bookRef, user, leiId}) => {
   const toggleRevogados = () => {
     setShowRevogadosState(prev => {
       const newState = !prev
-      const strikes = bookRef.current?.querySelectorAll('strike')
-      strikes?.forEach(strike => {
-        strike.classList.toggle('strikeHidden', !newState)
-        strike.classList.toggle('strikeVisible', newState)
+      const delTags = bookRef.current?.querySelectorAll('.revogado')
+      delTags?.forEach(delTag => {
+        delTag.classList.toggle('aparecer', newState)
       })
       return newState
     })

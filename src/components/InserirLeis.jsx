@@ -32,29 +32,23 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 import {AddIndultoTags, FixIndultoTags} from '../utils/Leis em HTML/Indulto/IndultoTags'
 import { addCFTags, fixCFTags } from "../utils/Leis em HTML/CF/CFtags";
+import { useSaveLeiOriginal } from "../hooks/useSaveLeiOriginal";
 
 function InserirLeis() {
     const [title, setTitle] = useState('')
-    const [numLei, setNumLei] = useState('')
+    const [apelido, setApelido] = useState('')
+    const [numLeiC, setNumLeiC] = useState('')
+    const [numLeiR, setNumLeiR] = useState('')
     const [texto, setTexto] = useState('')
 
-    const salvarLei = async (e) => {
+    const { salvarLei, salvando } = useSaveLeiOriginal()
+    const handleSalvar = async (e) => {
         e.preventDefault()
-
-        try {
-            await addDoc(collection(db, 'leis'), {
-                aTitle: title.trim(),
-                numLei: numLei.trim(),
-                texto: texto.trim(),
-                createdAt: serverTimestamp(),
-            })
-            alert("Lei salva com sucesso")
-            setTitle('')
-            setTexto('')
-        } catch (error) {
-            console.error("Erro ao salvar lei: ", error)
-            alert('Erro ao salvar a lei. Veja o console')
-        }
+        await salvarLei({title, apelido, numLeiC, numLeiR, texto})
+        setTitle('')
+        setNumLeiC('')
+        setNumLeiR('')
+        setTexto('')
     }
 
     //EDITA AS TAGS ORIGINAIS DO SITE DO PLANALTO
@@ -95,13 +89,42 @@ function InserirLeis() {
         e.preventDefault()
         /* ARQUIVO ADICIONADOR DE TAGS: */
         // const textoLimpo = addCFTags(texto)
-        const textoLimpo = AddIndultoTags(texto)
+        // const textoLimpo = AddIndultoTags(texto)
             
 
 
             /* TESTES - OS TESTES DEVEM SER AQUI, VISTO QUE O VITE NÃO ATUALIZA OS ARQUIVOS REMOVEDORES NA HORA!!! */
-            // const textoLimpo = texto
+            const textoLimpo = texto
 
+                    //Capítulos e títulos: tem que ser na mão
+
+        // //Espaços
+        .replace(/^\s*\n/gm, "")//exclui parágrafos vazios
+        .replace(/^\s*/gm, "")//exclui espaços vazios
+
+        //§§
+        .replace(/(§ \d+)º/g, "$1.º")//arrumar o § 1.º
+
+        //Envolver "Art. Xº" no início do parágrafo com <span class="titles">
+        .replace(/(<p[^>]*>)\s*(Art\.\s*\d+º)/gi, '$1<span class="titles">$2</span>')
+        //Envolver "Art. X." - a partir de 10 - no início do parágrafo com <span class="titles">
+        .replace(/(<p[^>]*>)\s*(Art\.\s*\d+\.)/gi, '$1<span class="titles">$2</span>')
+        //Envolver números romanos com hífen (I - até XX - etc.). Se tiver I-A, I-B vai pegar tb!
+        .replace(/(<p[^>]*>)\s*((?:[IVXLCDM]+(?:-[A-Z])?)\s*[–-]\s*)/gi, '$1<span class="titles">$2</span>')
+        //Envolver parágrafos iniciados por "§ nº" (de 1 a 9):
+        .replace(/(<p[^>]*>)\s*(§\s*[1-9].º)/gi, '$1<span class="titles">$2</span>')
+        //Envolver alíneas com letras de a) a z):
+        .replace(/(<p[^>]*>)\s*([a-z]\))/gi, '$1<span class="titles">$2</span>')
+        //Envolver parágrafo único:
+        .replace(/(<p[^>]*>)\s*(Parágrafo único\.)/gi, '$1<span class="titles">$2</span>')
+
+        //Troca <strike> por <del> e adiciona class="revogado" ao <p> que tenha antes do strike
+        .replace(/<p[^>]*>\s*<strike>/gi, '<p class="revogado"><del>')
+        .replace(/<\/strike>/gi, '</del>')
+
+        //Adiciona class leiRef ao restante dos <span>, que são os que são referência de lei
+        .replace(/<span>\(/gi, '<span class="leiRef2">(')
+        .replace(/<span>/gi, '<span class="leiRef">')
 
 
         setTexto(textoLimpo)
@@ -117,15 +140,27 @@ function InserirLeis() {
     return (
         <div>
             <h2>Formatação e inclusão de lei:</h2>
-            <form className="formContainer2" onSubmit={salvarLei}>
-                <label className="formControl">
-                    <span>Título da lei: </span>
-                    <input type="text" name="title" placeholder="Ex.: Código Penal - da forma que vai aparecer para o usuário" onChange={(e)=>setTitle(e.target.value)} required />
-                </label>
-                <label className="formControl">
-                    <span>Número da lei: </span>
-                    <input type="text" name="numLei" placeholder="Ex.: DEL2848, D12500, L12850, MP1500" onChange={(e)=>setNumLei(e.target.value)} required />
-                </label>
+            <form className="formContainer2" onSubmit={handleSalvar}>
+                <div className="flex">
+                    <label className="formControl">
+                        <span>Título da lei: </span>
+                        <input type="text" name="title" placeholder="Ex.: Código Penal" onChange={(e)=>setTitle(e.target.value)} required />
+                    </label>
+                    <label className="formControl">
+                        <span>Apelido: </span>
+                        <input type="text" name="apelido" placeholder="Ex.: CPC" onChange={(e)=>setApelido(e.target.value)} />
+                    </label>
+                </div>
+                <div className="flex">
+                    <label className="formControl">
+                        <span>Número da lei completo: </span>
+                        <input type="text" name="numLeiC" placeholder="Ex.: DECRETO Nº 12.338, DE 23 DE DEZEMBRO DE 2024" onChange={(e)=>setNumLeiC(e.target.value)} required />
+                    </label>
+                    <label className="formControl">
+                        <span>Número da lei resumido: </span>
+                        <input type="text" name="numLeiR" placeholder="Ex.: DEL2848, D12500, L12850, MP1500" onChange={(e)=>setNumLeiR(e.target.value)} required />
+                    </label>
+                </div>
 
                 {/* Tag TEXTAREA - é igual */}
                 <label className="formControl">
@@ -138,7 +173,7 @@ function InserirLeis() {
                     <button onClick={addMyTags} className="btn2">Adicionar HTML</button>&nbsp;➤&nbsp;
                     <button className="btn2">Gerar links</button>&nbsp;➤&nbsp;
                     <button onClick={visualize} className="btn2">Pré-visualizar</button>&nbsp;➤&nbsp;
-                    <input className="btn1" type="submit" value="Salvar Lei" />&nbsp;&nbsp;
+                    <input className="btn1" type="submit" value={salvando ? "Salvando lei original..." : "Salvar Lei"} />&nbsp;&nbsp;
 
                     <br />
                     <br />

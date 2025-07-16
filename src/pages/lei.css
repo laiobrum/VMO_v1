@@ -88,8 +88,17 @@ ul a:hover {
   color: rgb(0, 0, 192);
   cursor: pointer;
 }
-.strikeHidden {
+.leiRef2 {
+  color: grey;
+}
+.leiRef2:hover {
+  color: inherit;
+}
+.revogado {
   display: none;
+}
+.aparecer { /* aparecer tem que ficar após revogado!!! */
+  display: block;
 }
 
 

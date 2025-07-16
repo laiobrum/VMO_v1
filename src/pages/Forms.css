@@ -64,4 +64,13 @@
     border: 1px solid #777;
     border-radius: 5px;
 }
+.flex {
+  display: flex;
+  box-sizing: border-box;
+  gap: 10px;
+
+}
+.flex > .formControl {
+  width: 50%;
+}
 
