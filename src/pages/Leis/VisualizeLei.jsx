@@ -6,6 +6,7 @@ import { useAuthValue } from "../../context/AuthContext"
 import { useFetchUserDocument } from "../../hooks/useFetchUserDocument"
 import ToolBar from "../../components/ToolBar"
 import { useFetchDocuments } from "../../hooks/useFetchDocuments"
+import { useMergedLaw } from "../../hooks/useMergedLaw"
 
 const VisualizeLei = () => {
     const { leiId } = useParams()
@@ -17,29 +18,20 @@ const VisualizeLei = () => {
     
     //HOOKS:
     //Fetch dos dados - pega a lei alterada pelo usuário, se não tiver, pega a lei original - coloca no estado "Lei"
-    const {document: lei, loading, error} = useFetchUserDocument({
-        docCollection: 'users',
-        userId: user?.uid,
-        subCollection: 'anotacoesUsuario',
-        leiId        
-    })
-    //Fetch de todas as leis:
+    const { mergedDisps, loading, error } = useMergedLaw({ userId: user?.uid, leiId }) //AAAAALTERADO AQ
+
     const {documents: leis} = useFetchDocuments('leis')
 
     useEffect(() => {
-        if (!lei?.textoRenderizado) return
+        if (!mergedDisps?.length) return//AAAAALTERADO AQ
+        const nodes = mergedDisps.map(d => {
+            const div = document.createElement('div')
+            div.innerHTML = d.html
+            return div.firstChild
+        }).filter(Boolean)
 
         const book = bookRef.current
         book.innerHTML = ''
-
-        const tempContainer = document.createElement('div')
-        try {
-            tempContainer.innerHTML = lei.textoRenderizado
-        } catch (err) {
-            console.error("Erro ao interpretar HTML salvo:", err)
-            return
-        }
-        const nodes = Array.from(tempContainer.childNodes)
 
         const columnsPerPage = 3
         const maxLinesPerColumn = 30 //Limite de linhas por coluna
@@ -112,7 +104,7 @@ const VisualizeLei = () => {
             book.removeEventListener('mouseleave', handleMouseLeave)
         }
 
-    }, [lei])//Não colocar isToolbarHovered, pq sempre quando hover, ele restarta o useEffect e tira as marcações!
+    }, [mergedDisps])//Não colocar isToolbarHovered, pq sempre quando hover, ele restarta o useEffect e tira as marcações!
 
     if (loading) return <p>Carregando...</p>
     if (error) return <p>Ocorreu algum erro</p>

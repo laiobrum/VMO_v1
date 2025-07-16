@@ -27,8 +27,6 @@
 
 
 import { useState } from "react";
-import { db } from '../firebase/config'
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 import {AddIndultoTags, FixIndultoTags} from '../utils/Leis em HTML/Indulto/IndultoTags'
 import { addCFTags, fixCFTags } from "../utils/Leis em HTML/CF/CFtags";
@@ -104,6 +102,11 @@ function InserirLeis() {
 
         //§§
         .replace(/(§ \d+)º/g, "$1.º")//arrumar o § 1.º
+        .replace(/§\s*(\d+)o\b/g, '§ $1.º') //arruma § 2o para § 2.º
+        .replace(/^§\s*(\d+)\s*-\s*/gm, "§ $1. ")//Arruma os § 10 - para § 10.
+
+        // &#150; - isso é um hífen de forma diferente
+        .replace(/&#150;/g, '-')
 
         //Envolver "Art. Xº" no início do parágrafo com <span class="titles">
         .replace(/(<p[^>]*>)\s*(Art\.\s*\d+º)/gi, '$1<span class="titles">$2</span>')

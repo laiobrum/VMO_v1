@@ -26,7 +26,7 @@ export const addCFTags = (texto) => {
 
         //§§
         .replace(/(§ \d+)º/g, "$1.º")//arrumar o § 1.º
-        .replace(/^§\s*(\d+)\s*-\s*/gm, "§ $1. ")//Arruma os § 10 - para § 10.
+        .replace(/^§\s*(\d+)\s*-\s*/gm, "§ $1. ")//Arruma os § 10 - para § 10. 
         .replace(/^§\s*\d+\.º/gm, match => `<p><span>${match}</span>`)//Adiciona <p> e <span> nos º, só no início do parágrafo
         .replace(/^§\s*\d+\. /gm, match => `<p><span>${match}</span>`)//Adiciona <p> e <span> nos ., só no início do parágrafo
         .replace(/Parágrafo único./g, "Parágrafo único.</span>")//inclui /span após pu
