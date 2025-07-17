@@ -22,21 +22,6 @@ const ToolBar = ({bookRef, user, leiId}) => {
   const {save, salvando} = useSaveUserAlterations( {bookRef, userId: user?.uid, leiId } )
   //Seleção da ferramenta a ser usada
   const { highlightColor, boldMode, underlineMode, eraseMode, toggleTool } = useToggleTool()
-  //Conserta o texto após a remoção das marcações
-  const cleanTextNodes = (parent) => {
-    const textContent = Array.from(parent.childNodes)
-      .filter(node => node.nodeType === Node.TEXT_NODE)
-      .map(node => node.textContent)
-      .join('');
-
-    Array.from(parent.childNodes).forEach(node => {
-      if (node.nodeType === Node.TEXT_NODE) parent.removeChild(node)
-    });
-
-    if (textContent.trim()) {
-      parent.appendChild(document.createTextNode(textContent))
-    }
-  }
 
   // Funções de marcação
   const handleTool = () => {
@@ -102,24 +87,36 @@ const ToolBar = ({bookRef, user, leiId}) => {
 
     // Apagar marcação por seleção
     if (eraseMode) {
-      const contents = range.cloneContents()
-      const spans = contents.querySelectorAll('span.yellowHL, span.greenHL, span.pinkHL, span.boldTxt, span.underlineTxt')
-      if(spans.length === 0) {
+      const spansToRemove = []
+      const walker = document.createTreeWalker(
+        range.commonAncestorContainer,
+        NodeFilter.SHOW_ELEMENT,
+        {
+          acceptNode: (node) => {
+            if (
+              range.intersectsNode(node) &&
+              node.tagName === 'SPAN' &&
+              /(yellowHL|greenHL|pinkHL|boldTxt|underlineTxt)/.test(node.className)
+            ) {
+              return NodeFilter.FILTER_ACCEPT
+            }
+            return NodeFilter.FILTER_SKIP
+          }
+        }
+      )
+      let node
+      while ((node = walker.nextNode())) {
+        spansToRemove.push(node)
+      }
+      if (spansToRemove.length === 0) {
         setAlertMsg("Não há marcação para apagar nesta seleção")
         selection.removeAllRanges()
         return
       }
-    
-      spans.forEach(originalSpan => {
-        const textNode = document.createTextNode(originalSpan.textContent)
-        const spanInDom = findMatchingSpanInDom(bookRef.current, originalSpan.textContent)
-        if (spanInDom) {
-          const parent = spanInDom.parentNode
-          spanInDom.replaceWith(textNode)
-          cleanTextNodes(parent)
-        }
+      spansToRemove.forEach(span => {
+        const textNode = document.createTextNode(span.textContent)
+        span.replaceWith(textNode)
       })
-    
       selection.removeAllRanges()
       return
     }
@@ -179,7 +176,6 @@ const ToolBar = ({bookRef, user, leiId}) => {
         const parent = span.parentNode
         const textNode = document.createTextNode(span.textContent)
         span.replaceWith(textNode)
-        cleanTextNodes(parent)
       }
     }
 

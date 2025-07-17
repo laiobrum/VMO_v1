@@ -20,18 +20,29 @@ export const useMergedLaw = ({ userId, leiId }) => {
 
         const originalMap = {}
         originalSnap.forEach(doc => {
-          originalMap[doc.id] = { id: doc.id, html: doc.data().html }
+          const data = doc.data()
+          originalMap[doc.id] = { id: doc.id, html: data.html, ordem: data.ordem }
         })
 
         alteredSnap.forEach(doc => {
-          originalMap[doc.id] = { id: doc.id, html: doc.data().html } // substitui o original
+          const data = doc.data()
+          if (originalMap[doc.id]) {
+            originalMap[doc.id] = {
+              id: doc.id,
+              html: data.html,
+              ordem: originalMap[doc.id].ordem  // mantém a ordem do original
+            }
+          } else {
+            // caso raro: alteração do usuário sem documento original
+            originalMap[doc.id] = {
+              id: doc.id,
+              html: data.html,
+              ordem: 99999 // joga pro final, mas você pode escolher outro critério
+            }
+          }
         })
 
-        const merged = Object.values(originalMap).sort((a, b) => {
-          const getOrder = id => parseInt(id.match(/\d+/)?.[0] || 0)
-          return getOrder(a.id) - getOrder(b.id)
-        })
-
+        const merged = Object.values(originalMap).sort((a, b) => a.ordem - b.ordem)
         setMergedDisps(merged)
       } catch (err) {
         console.error("Erro ao mesclar dispositivos:", err)

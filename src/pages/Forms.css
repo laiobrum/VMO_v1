@@ -56,7 +56,7 @@
 .formContainer2 {
     margin: 2em;
     text-align: left;
-    width: 70vw;
+    /* width: 70vw; */
 }
 .formContainer2 textarea {
     height: 60vh;

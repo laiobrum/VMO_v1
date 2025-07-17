@@ -3,7 +3,6 @@ import { NavLink, useParams } from "react-router-dom"
 import '../lei.css'
 import ToolBar2 from "../../components/ToolBar2"
 import { useAuthValue } from "../../context/AuthContext"
-import { useFetchUserDocument } from "../../hooks/useFetchUserDocument"
 import ToolBar from "../../components/ToolBar"
 import { useFetchDocuments } from "../../hooks/useFetchDocuments"
 import { useMergedLaw } from "../../hooks/useMergedLaw"

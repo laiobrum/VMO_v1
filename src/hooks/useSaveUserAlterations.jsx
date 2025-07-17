@@ -65,23 +65,3 @@ export const useSaveUserAlterations = ({ bookRef, userId, leiId }) => {
 
   return { save, salvando }
 }
-
-
-
-//       const paragraphs = Array.from(bookRef.current.querySelectorAll(".column > p, .column > div"))
-//       const html = paragraphs.map(p => p.outerHTML).join("\n")
-
-//       const ref = doc(db, "users", userId, "anotacoesUsuario", leiId)
-//       await setDoc(ref, {
-//         leiId,
-//         textoEditado: html,
-//         atualizadoEm: new Date()
-//       })
-//       setSalvando(false)
-//     } catch (error) {
-//       console.log(error.message)
-//     }
-//   }
-
-//   return {save, salvando}
-// }

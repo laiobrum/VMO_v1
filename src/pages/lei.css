@@ -31,12 +31,12 @@ ul a:hover {
   color: var(--btnColor-2);
 }
 .center {
-  margin-top: 1em;
-}
-.center p {
+  background-color: rgb(241, 241, 255);
   text-align: center;
   font-weight: bold;
+  border-radius: 0;
 }
+
 .book {
   max-width: 1200px;
   margin: 0 auto;
@@ -85,7 +85,7 @@ ul a:hover {
   font-size: x-small;
 }
 .leiRef {
-  color: rgb(0, 0, 192);
+  color: rgb(0, 0, 117);
   cursor: pointer;
 }
 .leiRef2 {

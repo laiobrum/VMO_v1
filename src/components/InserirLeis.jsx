@@ -65,8 +65,8 @@ function InserirLeis() {
             .replace(/<p[^>]*>/gi, '<p>')
 
             // //Tags
-            .replace(/<(font|span|u|sup|i|small|table|b|td|tbody|strong|tr|blockquote)[^>]*>/gi, '')//Remove todas as tags inúteis
-            .replace(/<\/(font|span|u|sup|i|small|table|b|td|tbody|strong|tr|blockquote)>/gi, '')//Remove fechamento das tags inúteis
+            .replace(/<(font|span|u|sup|i|small|table|b|td|div|body|tbody|strong|tr|blockquote)[^>]*>/gi, '')//Remove todas as tags inúteis
+            .replace(/<\/(font|span|u|sup|i|small|table|b|td|div|body|tbody|strong|tr|blockquote)>/gi, '')//Remove fechamento das tags inúteis
 
             // Move name="..." da <a> para id="..." do <p>
             .replace(/<p([^>]*)>\s*<a name="([^"]+)"[^>]*><\/a>([\s\S]*?)<\/p>/gi, '<p id="$2"$1>$3</p>')
@@ -134,6 +134,20 @@ function InserirLeis() {
         return 
     }
 
+    const createIds = (e) => {
+        e.preventDefault()
+        let contador = 1;
+        const textoLimpo = texto
+
+        .replace(/<p(?![^>]*id=)([^>]*)>/gi, (_, otherAttrs) => {
+        const id = `p${contador++}`
+        return `<p id="${id}"${otherAttrs}>`
+        })
+
+        setTexto(textoLimpo)
+        return 
+    }
+
     const visualize = (e) => {
         e.preventDefault()
         localStorage.setItem('texto-temporário', texto)
@@ -174,6 +188,7 @@ function InserirLeis() {
                 <div className="btnContainer">
                     <button onClick={fixOriginalTags} className="btn2">Editar tags originais</button>&nbsp;➤&nbsp;
                     <button onClick={addMyTags} className="btn2">Adicionar HTML</button>&nbsp;➤&nbsp;
+                    <button onClick={createIds} className="btn2">Criar IDs que faltam</button>&nbsp;➤&nbsp;
                     <button className="btn2">Gerar links</button>&nbsp;➤&nbsp;
                     <button onClick={visualize} className="btn2">Pré-visualizar</button>&nbsp;➤&nbsp;
                     <input className="btn1" type="submit" value={salvando ? "Salvando lei original..." : "Salvar Lei"} />&nbsp;&nbsp;
