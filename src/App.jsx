@@ -18,6 +18,7 @@ import InserirLeis from "./components/InserirLeis"
 import TesteLei from "./components/TesteLei"
 import TodasLeis from "./pages/Leis/TodasLeis"
 import VisualizeLei from "./pages/Leis/VisualizeLei"
+import CompararLeis from "./components/CompararLeis"
 
 function App() {
   const [user, setUser] = useState(undefined)
@@ -48,11 +49,14 @@ function App() {
               <Route path="/recoverPassword" element={<Recover/>}/>
               <Route path="/restrictarea" element={(emailVerifiedUser && isAdmin) ? <AreaRestrita/> : <Navigate to='/'/>}/>
               <Route path="/insertlaws" element={(emailVerifiedUser && isAdmin) ? <InserirLeis/> : <Navigate to='/'/>}/>
+              <Route path="/insertlaws/comparar" element={<CompararLeis/>}/>
+              
               <Route path="/teste-nova-lei" element={<TesteLei/>}/>
 
               {/* Rotas públicas */}
               <Route path="/leis" element={<TodasLeis/>}/>
               <Route path="/leis/:leiId" element={<VisualizeLei/>}/>
+              
               
               
               <Route path="*" element={<NotFound/>}/>

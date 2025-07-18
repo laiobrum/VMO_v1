@@ -44,6 +44,7 @@ export const useSaveUserAlterations = ({ bookRef, userId, leiId }) => {
           altered.push({ id, html: htmlAtual })
         }
       }
+      console.log(altered)
 
       // 3. SALVA SOMENTE OS QUE FORAM ALTERADOS
       const dispsRef = collection(db, "users", userId, "alteracoesUsuario", leiId, "disps")

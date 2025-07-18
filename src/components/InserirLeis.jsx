@@ -31,6 +31,7 @@ import { useState } from "react";
 import {AddIndultoTags, FixIndultoTags} from '../utils/Leis em HTML/Indulto/IndultoTags'
 import { addCFTags, fixCFTags } from "../utils/Leis em HTML/CF/CFtags";
 import { useSaveLeiOriginal } from "../hooks/useSaveLeiOriginal";
+import { NavLink } from "react-router-dom";
 
 function InserirLeis() {
     const [title, setTitle] = useState('')
@@ -65,8 +66,8 @@ function InserirLeis() {
             .replace(/<p[^>]*>/gi, '<p>')
 
             // //Tags
-            .replace(/<(font|span|u|sup|i|small|table|b|td|div|body|tbody|strong|tr|blockquote)[^>]*>/gi, '')//Remove todas as tags inúteis
-            .replace(/<\/(font|span|u|sup|i|small|table|b|td|div|body|tbody|strong|tr|blockquote)>/gi, '')//Remove fechamento das tags inúteis
+            .replace(/<(font|span|u|sup|i|em|small|table|b|td|div|body|tbody|strong|tr|blockquote)[^>]*>/gi, '')//Remove todas as tags inúteis
+            .replace(/<\/(font|span|u|sup|i|em|small|table|b|td|div|body|tbody|strong|tr|blockquote)>/gi, '')//Remove fechamento das tags inúteis
 
             // Move name="..." da <a> para id="..." do <p>
             .replace(/<p([^>]*)>\s*<a name="([^"]+)"[^>]*><\/a>([\s\S]*?)<\/p>/gi, '<p id="$2"$1>$3</p>')
@@ -181,7 +182,7 @@ function InserirLeis() {
 
                 {/* Tag TEXTAREA - é igual */}
                 <label className="formControl">
-                    <span>Texto da lei: </span>
+                    <span>Texto da lei modificado: </span>
                     <textarea type="textarea" name="texto" placeholder="Insira todo o texto legal" onChange={(e)=>setTexto(e.target.value)} value={texto} ></textarea>
                 </label>
                 
@@ -195,8 +196,7 @@ function InserirLeis() {
 
                     <br />
                     <br />
-                    <button className="btn2">Editar p/ referência cruzada</button>&nbsp;➤&nbsp;
-                    <input className="btn1" type="submit" value="Salvar p/ referência cruzada" />
+                    <NavLink to='/insertlaws/comparar' target="_blank" rel="noopener noreferrer" className="a2 ">Comparar Leis</NavLink>&nbsp;
                 </div>
             </form>
         </div>
