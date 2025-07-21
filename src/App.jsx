@@ -19,7 +19,6 @@ import TesteLei from "./components/TesteLei"
 import TodasLeis from "./pages/Leis/TodasLeis"
 import VisualizeLei from "./pages/Leis/VisualizeLei"
 import CompararLeis from "./components/CompararLeis"
-import CompararViewComLei from "./pages/CompararViewComLei"
 
 function App() {
   const [user, setUser] = useState(undefined)
@@ -57,7 +56,6 @@ function App() {
               {/* Rotas públicas */}
               <Route path="/leis" element={<TodasLeis/>}/>
               <Route path="/leis/:leiId" element={<VisualizeLei/>}/>
-              <Route path="/leis/comparar" element={<CompararViewComLei />} />
               
               
               

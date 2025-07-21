@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { Link, Navigate, NavLink, useParams } from "react-router-dom"
+import { NavLink, useParams } from "react-router-dom"
 import '../lei.css'
 import ToolBar2 from "../../components/ToolBar2"
 import { useAuthValue } from "../../context/AuthContext"
