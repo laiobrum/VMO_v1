@@ -29,7 +29,7 @@ const ToolBar = ({bookRef, user, leiId}) => {
     if (!selection || selection.isCollapsed) return
     const range = selection.getRangeAt(0)
 
-  // 🔄 VERIFICA SE A SELEÇÃO COMEÇA OU INTERSECTA TRECHO MARCADO
+  // VERIFICA SE A SELEÇÃO COMEÇA OU INTERSECTA TRECHO MARCADO
   const selectionHasMarkings = (selection, range, rootNode) => {
     // Verifica se ponto inicial da seleção já está dentro de marcação
     let node = selection.anchorNode
@@ -121,7 +121,7 @@ const ToolBar = ({bookRef, user, leiId}) => {
       return
     }
 
-    //Adicionar marcações, amerela, bold e underline
+    //Adicionar marcações, amerela, green, pink, bold e underline
     const span = document.createElement('span')
     let classes = []
     if(highlightColor) {
@@ -134,6 +134,7 @@ const ToolBar = ({bookRef, user, leiId}) => {
     } 
     if(boldMode) classes.push('boldTxt')
     if(underlineMode) classes.push('underlineTxt')
+    if(classes.length > 0) classes.push("alterado")
 
     span.className = classes.join(' ')
     span.appendChild(range.extractContents())
@@ -141,17 +142,6 @@ const ToolBar = ({bookRef, user, leiId}) => {
 
     selection.removeAllRanges()
   }
-
-  const findMatchingSpanInDom = (container, text) => {
-    const spans = container.querySelectorAll('span.yellowHL, span.greenHL, span.pinkHL, span.boldTxt, span.underlineTxt')
-    for (let span of spans) {
-      if (span.textContent === text) {
-        return span
-      }
-    }
-    return null
-  }
-
 
 
   // REGISTRA O LISTENER GLOBAL DE SELEÇÃO (MANTÉM FUNCIONALIDADE DE MARCAÇÃO)

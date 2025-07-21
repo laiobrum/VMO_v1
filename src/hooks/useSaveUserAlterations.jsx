@@ -22,12 +22,12 @@ export const useSaveUserAlterations = ({ bookRef, userId, leiId }) => {
     try {
       setSalvando(true)
 
-      // 1. BUSCA OS PARÁGRAFOS ORIGINAIS
+      //XXXXXXXXXXXXXXX 1. BUSCA OS PARÁGRAFOS ORIGINAIS XXXXXX
       const originalDispsSnap = await getDocs(collection(db, "leis", leiId, "disps"))
       const originalMap = new Map()
       originalDispsSnap.forEach(doc => {
         originalMap.set(doc.id, doc.data().html.trim())
-      })
+      }) 
 
       // 2. OBTÉM OS PARÁGRAFOS ATUAIS DO USUÁRIO NA TELA
       const renderedParagraphs = Array.from(bookRef.current.querySelectorAll(".column > p, .column > div"))
