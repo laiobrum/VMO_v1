@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { NavLink, useNavigate, useParams } from "react-router-dom"
+import { Link, Navigate, NavLink, useParams } from "react-router-dom"
 import '../lei.css'
 import ToolBar2 from "../../components/ToolBar2"
 import { useAuthValue } from "../../context/AuthContext"
@@ -22,26 +22,6 @@ const VisualizeLei = () => {
     const { mergedDisps, loading, error } = useMergedLaw({ userId: user?.uid, leiId })
 
     const {documents: leis} = useFetchDocuments('leis')
-
-    //COMPARAÇÃO DE TEXTOS LEGAIS
-    const navigate = useNavigate()
-    const compararVersoes = () => {
-    const book = bookRef.current
-    if (!book) return
-    // 🟡 Pega todo o texto da lei sem tags HTML
-    const textoAtual = book.innerText.trim()
-    // 🔵 Pega o link do primeiro <a> dentro do #p1
-    const primeiroLink = document.querySelector('#p1 > a')
-    const textoOriginal = primeiroLink?.getAttribute('href') || ''
-    // Navega para a página de comparação, enviando os dados via state
-    navigate('/leis/comparar', {
-            state: {
-                textoAtual,
-                textoOriginal,
-            }
-        })
-    }
-    //---------------------------------
 
     useEffect(() => {
         if (!mergedDisps?.length) return
@@ -103,8 +83,18 @@ const VisualizeLei = () => {
                         columns[i].appendChild(botaoContainer)
 
                         const root = createRoot(botaoContainer)
-                        root.render(<BotaoComparar onClick={compararVersoes} />)
-
+                        root.render(
+                            <BotaoComparar
+                                onClick={() => {
+                                const link = document.querySelector('#p1 a')?.getAttribute('href')
+                                if (link) {
+                                    window.open(link, '_blank') // abre em nova aba
+                                } else {
+                                    alert("Link original não encontrado.")
+                                }
+                                }}
+                            />
+                        )
                         botaoInserido = true
                     }
 

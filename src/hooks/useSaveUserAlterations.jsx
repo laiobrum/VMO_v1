@@ -9,7 +9,7 @@ users (coleção)
                       - html: "<p id='art1'>Texto com marcação</p>"
                       - atualizadoEm: timestamp
 */
-import { collection, doc, getDocs, setDoc } from "firebase/firestore"
+import { collection, doc, setDoc } from "firebase/firestore"
 import { db } from "../firebase/config"
 import { useState } from "react"
 

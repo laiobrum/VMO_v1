@@ -6,8 +6,7 @@ const BotaoComparar = ({ onClick }) => (
         <button className="btnVerified" onClick={onClick}>
             <MdVerified size={20} style={{ marginRight: 8 }} />
             <div>
-                Lei idêntica à original<br />
-                <strong>Clique aqui</strong> para comparar
+                Lei idêntica à original
             </div>            
         </button>
     </div>
