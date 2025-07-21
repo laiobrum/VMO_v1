@@ -115,7 +115,12 @@ const ToolBar = ({bookRef, user, leiId}) => {
       }
       spansToRemove.forEach(span => {
         const textNode = document.createTextNode(span.textContent)
+        const parent = span.parentElement
         span.replaceWith(textNode)
+
+        //Marca parágrafo como alterado
+        const paragraph = span.closest('p')
+        if(paragraph) paragraph.classList.add('alterado')
       })
       selection.removeAllRanges()
       return
@@ -134,11 +139,14 @@ const ToolBar = ({bookRef, user, leiId}) => {
     } 
     if(boldMode) classes.push('boldTxt')
     if(underlineMode) classes.push('underlineTxt')
-    if(classes.length > 0) classes.push("alterado")
 
     span.className = classes.join(' ')
     span.appendChild(range.extractContents())
     range.insertNode(span)
+
+    // ✅ Marca o parágrafo-pai como alterado
+    const paragraph = span.closest('p')
+    if (paragraph) paragraph.classList.add('alterado')
 
     selection.removeAllRanges()
   }
@@ -162,10 +170,22 @@ const ToolBar = ({bookRef, user, leiId}) => {
 
     const handleClickOnSpan = (e) => {
       const span = e.target
-      if (span.tagName === 'SPAN' && /(yellowHL|greenHL|pinkHL|boldTxt|underlineTxt)/.test(span.className)) {
-        const parent = span.parentNode
+      // Confirma que o clique foi em uma marcação relevante
+      if (
+        span.tagName === 'SPAN' &&
+        /(yellowHL|greenHL|pinkHL|boldTxt|underlineTxt)/.test(span.className)
+      ) {
+        const paragraph = span.closest('p')
+
+        // Substitui o span pelo texto puro
         const textNode = document.createTextNode(span.textContent)
         span.replaceWith(textNode)
+
+        // ✅ Marca o parágrafo (com id) como alterado
+        if (paragraph) {
+          paragraph.classList.add('alterado')
+          console.log(`Parágrafo ${paragraph.id} marcado como alterado.`)
+        }
       }
     }
 

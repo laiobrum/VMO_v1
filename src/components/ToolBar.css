@@ -6,6 +6,42 @@
 .toolbar:hover {
   opacity: 1;
 }
+/* .btnComparacao {
+  position: fixed;         
+  top: 60px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;               
+  z-index: 1000;
+}
+.btnVerified {
+  cursor: pointer;
+  border-radius: 50%;
+  height: 50px;
+  width: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: none;
+  border: none;
+  color: blue;
+}
+.btnHide {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  background-color: #eef;
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+.btnVerified:hover + .btnHide {
+  opacity: 1;
+  pointer-events: auto;
+} */
+
 .toolContainer {
   top: 7px;
   display: flex;
@@ -67,6 +103,7 @@
   color: rgb(255, 255, 0);
   opacity: 1!important;
 }
+
 .colorMT {
   position: absolute;
   top: 25px;

@@ -22,29 +22,21 @@ export const useSaveUserAlterations = ({ bookRef, userId, leiId }) => {
     try {
       setSalvando(true)
 
-      //XXXXXXXXXXXXXXX 1. BUSCA OS PARÁGRAFOS ORIGINAIS XXXXXX
-      const originalDispsSnap = await getDocs(collection(db, "leis", leiId, "disps"))
-      const originalMap = new Map()
-      originalDispsSnap.forEach(doc => {
-        originalMap.set(doc.id, doc.data().html.trim())
-      }) 
-
-      // 2. OBTÉM OS PARÁGRAFOS ATUAIS DO USUÁRIO NA TELA
-      const renderedParagraphs = Array.from(bookRef.current.querySelectorAll(".column > p, .column > div"))
+      //Busca parágrafos marcados como alterados
+      const alteredParagraphs = Array.from(bookRef.current.querySelectorAll(".alterado"))
       const altered = []
 
-      for (const p of renderedParagraphs) {
-        const id = p.getAttribute("id")
+      for (const p of alteredParagraphs) {
+        const id = p.getAttribute('id')
         if (!id) continue
 
-        const htmlAtual = p.outerHTML.trim()
-        const htmlOriginal = originalMap.get(id)
+        p.classList.remove('alterado')
 
-        if (!htmlOriginal || htmlAtual !== htmlOriginal) {
-          altered.push({ id, html: htmlAtual })
-        }
+        const alteredHtml = document.getElementById(id)?.outerHTML.trim()
+        if (!alteredHtml) continue
+
+        altered.push({ id, html: alteredHtml})
       }
-      console.log(altered)
 
       // 3. SALVA SOMENTE OS QUE FORAM ALTERADOS
       const dispsRef = collection(db, "users", userId, "alteracoesUsuario", leiId, "disps")

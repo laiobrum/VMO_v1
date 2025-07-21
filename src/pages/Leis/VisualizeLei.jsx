@@ -6,6 +6,9 @@ import { useAuthValue } from "../../context/AuthContext"
 import ToolBar from "../../components/ToolBar"
 import { useFetchDocuments } from "../../hooks/useFetchDocuments"
 import { useMergedLaw } from "../../hooks/useMergedLaw"
+import { MdVerified } from "react-icons/md";
+import BotaoComparar from "../../components/BotaoComparar"
+import { createRoot } from "react-dom/client"
 
 const VisualizeLei = () => {
     const { leiId } = useParams()
@@ -17,12 +20,12 @@ const VisualizeLei = () => {
     
     //HOOKS:
     //Fetch dos dados - pega a lei alterada pelo usuário, se não tiver, pega a lei original - coloca no estado "Lei"
-    const { mergedDisps, loading, error } = useMergedLaw({ userId: user?.uid, leiId }) //AAAAALTERADO AQ
+    const { mergedDisps, loading, error } = useMergedLaw({ userId: user?.uid, leiId })
 
     const {documents: leis} = useFetchDocuments('leis')
 
     useEffect(() => {
-        if (!mergedDisps?.length) return//AAAAALTERADO AQ
+        if (!mergedDisps?.length) return
         const nodes = mergedDisps.map(d => {
             const div = document.createElement('div')
             div.innerHTML = d.html
@@ -67,15 +70,29 @@ const VisualizeLei = () => {
             return index
         }
 
-        function fillPages() {
-            while(currentNodeIndex < nodes.length) {
-                const page = createPage()
-                const columns = page.getElementsByClassName('column')
-                for (let i = 0; i < columns.length && currentNodeIndex < nodes.length; i++) {
-                    currentNodeIndex = fillColumn(columns[i], currentNodeIndex)
-                }
+function fillPages() {
+    let botaoInserido = false
+
+    while (currentNodeIndex < nodes.length) {
+        const page = createPage()
+        const columns = page.getElementsByClassName('column')
+
+        for (let i = 0; i < columns.length && currentNodeIndex < nodes.length; i++) {
+            // Insere o BotaoComparar só na primeira coluna da primeira página
+            if (!botaoInserido && i === 0) {
+                const botaoContainer = document.createElement('div')
+                columns[i].appendChild(botaoContainer)
+
+                const root = createRoot(botaoContainer)
+                root.render(<BotaoComparar onClick={() => alert("Comparar versões")} />)
+
+                botaoInserido = true
             }
+
+            currentNodeIndex = fillColumn(columns[i], currentNodeIndex)
         }
+    }
+}
         
         function handleMouseOver(e) {
             if (e.target.tagName === 'P') {
@@ -108,9 +125,10 @@ const VisualizeLei = () => {
     if (loading) return <p>Carregando...</p>
     if (error) return <p>Ocorreu algum erro</p>
 
-    return (        
+    return (     
+        <>
         <div className="law_container">
-            {/* TOOLBAR fixa */}
+            {/* TOOLBAR e botão COMPARAR fixos */}
             <div className="toolContainer">
                 <ToolBar bookRef={bookRef} user={user} leiId={leiId} />
                 {/* BARRA DE LEIS */}
@@ -146,6 +164,7 @@ const VisualizeLei = () => {
 
             
         </div>
+        </>
     )
 }
 
