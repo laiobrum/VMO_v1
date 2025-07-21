@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from "react"
-import { NavLink, useParams } from "react-router-dom"
+import { NavLink, useNavigate, useParams } from "react-router-dom"
 import '../lei.css'
 import ToolBar2 from "../../components/ToolBar2"
 import { useAuthValue } from "../../context/AuthContext"
 import ToolBar from "../../components/ToolBar"
 import { useFetchDocuments } from "../../hooks/useFetchDocuments"
 import { useMergedLaw } from "../../hooks/useMergedLaw"
-import { MdVerified } from "react-icons/md";
 import BotaoComparar from "../../components/BotaoComparar"
 import { createRoot } from "react-dom/client"
 
@@ -23,6 +22,26 @@ const VisualizeLei = () => {
     const { mergedDisps, loading, error } = useMergedLaw({ userId: user?.uid, leiId })
 
     const {documents: leis} = useFetchDocuments('leis')
+
+    //COMPARAÇÃO DE TEXTOS LEGAIS
+    const navigate = useNavigate()
+    const compararVersoes = () => {
+    const book = bookRef.current
+    if (!book) return
+    // 🟡 Pega todo o texto da lei sem tags HTML
+    const textoAtual = book.innerText.trim()
+    // 🔵 Pega o link do primeiro <a> dentro do #p1
+    const primeiroLink = document.querySelector('#p1 > a')
+    const textoOriginal = primeiroLink?.getAttribute('href') || ''
+    // Navega para a página de comparação, enviando os dados via state
+    navigate('/leis/comparar', {
+            state: {
+                textoAtual,
+                textoOriginal,
+            }
+        })
+    }
+    //---------------------------------
 
     useEffect(() => {
         if (!mergedDisps?.length) return
@@ -70,29 +89,29 @@ const VisualizeLei = () => {
             return index
         }
 
-function fillPages() {
-    let botaoInserido = false
+        function fillPages() {
+            let botaoInserido = false
 
-    while (currentNodeIndex < nodes.length) {
-        const page = createPage()
-        const columns = page.getElementsByClassName('column')
+            while (currentNodeIndex < nodes.length) {
+                const page = createPage()
+                const columns = page.getElementsByClassName('column')
 
-        for (let i = 0; i < columns.length && currentNodeIndex < nodes.length; i++) {
-            // Insere o BotaoComparar só na primeira coluna da primeira página
-            if (!botaoInserido && i === 0) {
-                const botaoContainer = document.createElement('div')
-                columns[i].appendChild(botaoContainer)
+                for (let i = 0; i < columns.length && currentNodeIndex < nodes.length; i++) {
+                    // Insere o BotaoComparar só na primeira coluna da primeira página
+                    if (!botaoInserido && i === 0) {
+                        const botaoContainer = document.createElement('div')
+                        columns[i].appendChild(botaoContainer)
 
-                const root = createRoot(botaoContainer)
-                root.render(<BotaoComparar onClick={() => alert("Comparar versões")} />)
+                        const root = createRoot(botaoContainer)
+                        root.render(<BotaoComparar onClick={compararVersoes} />)
 
-                botaoInserido = true
+                        botaoInserido = true
+                    }
+
+                    currentNodeIndex = fillColumn(columns[i], currentNodeIndex)
+                }
             }
-
-            currentNodeIndex = fillColumn(columns[i], currentNodeIndex)
         }
-    }
-}
         
         function handleMouseOver(e) {
             if (e.target.tagName === 'P') {

@@ -6,41 +6,32 @@
 .toolbar:hover {
   opacity: 1;
 }
-/* .btnComparacao {
-  position: fixed;         
-  top: 60px;
-  left: 20px;
-  display: flex;
-  align-items: center;
-  gap: 8px;               
-  z-index: 1000;
+.btnComparacao {
+  /* border: 1px solid black; */
+  border-radius: 50px;
 }
 .btnVerified {
-  cursor: pointer;
-  border-radius: 50%;
-  height: 50px;
-  width: 50px;
-  display: flex;
-  justify-content: center;
+  display: flex; 
   align-items: center;
-  background-color: none;
+  cursor: pointer;
+  background-color: inherit;
   border: none;
-  color: blue;
+  color: green;
+  opacity: 0.7;
 }
-.btnHide {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-  background-color: #eef;
-  border: 1px solid #ccc;
-  padding: 8px 12px;
-  border-radius: 6px;
-  white-space: nowrap;
-}
-.btnVerified:hover + .btnHide {
+.btnVerified:hover {
   opacity: 1;
-  pointer-events: auto;
-} */
+}
+.btnVerified svg {
+  width: 30px;
+  height: 30px;
+}
+.btnVerified div {
+  text-align: left;
+  font-size: smaller;
+  font-style: italic;
+  color: rgb(0, 0, 0);
+}
 
 .toolContainer {
   top: 7px;
