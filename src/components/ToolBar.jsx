@@ -4,6 +4,7 @@ import { PiEraserFill, PiHighlighterFill } from "react-icons/pi";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { BiSolidCommentEdit } from "react-icons/bi";
 import { CgFormatStrike } from "react-icons/cg";
+import { GoLaw } from "react-icons/go";
 import '../pages/lei.css'
 import { ImBold } from 'react-icons/im';
 import { IoMdSave } from "react-icons/io";
@@ -16,6 +17,7 @@ import { useSaveUserAlterations } from '../hooks/useSaveUserAlterations';
 const ToolBar = ({bookRef, user, leiId}) => {
   const [alertMsg, setAlertMsg] = useState(null)
   const [showRevogados, setShowRevogadosState] = useState(false)
+  const [showComentarios, setShowComentarios] = useState(true)
 
   //HOOKS
   //Salva alterações ao apertar botão
@@ -115,7 +117,6 @@ const ToolBar = ({bookRef, user, leiId}) => {
       }
       spansToRemove.forEach(span => {
         const textNode = document.createTextNode(span.textContent)
-        const parent = span.parentElement
         span.replaceWith(textNode)
 
         //Marca parágrafo como alterado
@@ -208,6 +209,16 @@ const ToolBar = ({bookRef, user, leiId}) => {
     })
   }
 
+  const toggleComentarios = () => {
+    const newState = !showComentarios
+    setShowComentarios(newState)
+
+    const comentarios = bookRef.current?.querySelectorAll('.cmt-user')
+    comentarios?.forEach(comentario => {
+      comentario.style.display = newState ? 'block' : 'none'
+    })
+  }
+
   return (
     <>
     <div className='toolbar'>
@@ -220,13 +231,15 @@ const ToolBar = ({bookRef, user, leiId}) => {
           <button className={`btnTool ${boldMode ? "btnToolClicked" : ""}`} title='Negrito' onClick={() => toggleTool('bold')} ><ImBold /></button>
           <button className={`btnTool ${underlineMode ? "btnToolClicked" : ""}`} title='Sublinhado' onClick={() => toggleTool('underline')}><MdFormatUnderlined /></button>
           <button className={`btnTool ${eraseMode ? "btnToolClicked" : ""}`} title='Apagar marcações' onClick={() => toggleTool('erase')}><PiEraserFill /></button>
-          
-          <button className='btnTool' title='Exibir comentários'><BiSolidCommentEdit /></button>
-          <button className='btnTool' title='Exibir texto revogado'   onClick={toggleRevogados}> <CgFormatStrike /></button>
-  
-                
-                    
+          <button className={`btnTool ${showComentarios ? 'btnToolClicked' : ''}`} onClick={toggleComentarios} title='Exibir comentários'><BiSolidCommentEdit /></button>
+          <button className='btnTool' title='Exibir jurisprudência'><GoLaw /></button>
+          <button className='btnTool' title='Exibir texto revogado' onClick={toggleRevogados}> <CgFormatStrike /></button>                    
           <button className='btnTool' title='As alterações são salvas automaticamente a cada 30 segundos' onClick={save} disabled={salvando} >{salvando ? <AiOutlineLoading3Quarters className='loadingIcon' /> :<IoMdSave />}</button>
+
+          <button className='btnTool' title='Exibir texto revogado' onClick={toggleRevogados}>s/ marcações</button>
+          <button className='btnTool' title='Exibir texto revogado' onClick={toggleRevogados}>tamanho txt</button>
+          <button className='btnTool' title='Exibir texto revogado' onClick={toggleRevogados}>Refs cruzadas</button>
+          <button className='btnTool' title='Exibir texto revogado' onClick={toggleRevogados}>lawSideBar</button>
         </div>
     </div>
     <div className='alertContainer'>

@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { useFetchDocuments } from '../../hooks/useFetchDocuments'
+import { useFetchDocuments } from '../hooks/useFetchDocuments'
 
 const TodasLeis = () => {
     const { documents: leis, loading, error } = useFetchDocuments('leis')

@@ -1,5 +1,6 @@
 import { Link, NavLink } from "react-router-dom"
 import { useFetchDocuments } from "../hooks/useFetchDocuments"
+import TiptapEditor from "../components/TiptapEditor"
 
 const Home = () => {  
   const { documents: leis, loading } = useFetchDocuments('leis') 
@@ -8,6 +9,8 @@ const Home = () => {
     <div>
         <h1>Home</h1>
         <h2>Acesso rápido</h2>
+
+        <TiptapEditor />
 
         <ul>
           {loading && <li>Carregando...</li>}

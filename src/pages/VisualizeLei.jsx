@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from "react"
 import { NavLink, useParams } from "react-router-dom"
-import '../lei.css'
-import ToolBar2 from "../../components/ToolBar2"
-import { useAuthValue } from "../../context/AuthContext"
-import ToolBar from "../../components/ToolBar"
-import { useFetchDocuments } from "../../hooks/useFetchDocuments"
-import { useMergedLaw } from "../../hooks/useMergedLaw"
-import BotaoComparar from "../../components/BotaoComparar"
+import './lei.css'
+import ToolBar2 from "../components/ToolBar2"
+import { useAuthValue } from "../context/AuthContext"
+import ToolBar from "../components/ToolBar"
+import { useFetchDocuments } from "../hooks/useFetchDocuments"
+import { useMergedLaw } from "../hooks/useMergedLaw"
+import BotaoComparar from "../components/BotaoComparar"
 import { createRoot } from "react-dom/client"
+import TiptapEditor from "../components/TiptapEditor"
 
 const VisualizeLei = () => {
     const { leiId } = useParams()
@@ -15,6 +16,8 @@ const VisualizeLei = () => {
     const bookRef = useRef(null)
 
     const [hoveredP, setHoveredP] = useState(null)
+    const [editorBelowP, setEditorBelowP] = useState(null)
+    const [activeEditorP, setActiveEditorP] = useState(null)
     const [isToolbarHovered, setIsToolbarHovered] = useState(false)
     
     //HOOKS:
@@ -104,16 +107,25 @@ const VisualizeLei = () => {
         }
         
         function handleMouseOver(e) {
-            if (e.target.tagName === 'P') {
-                setHoveredP(e.target)
-            }
+        const el = e.target
+
+        // Ignora se estiver dentro de comentário
+        if (el.closest('.cmt-user')) return
+
+        // Ignora se estiver dentro do editor
+        if (el.closest('.editor-holder')) return
+
+        // Só aceita <p> diretamente
+        if (el.tagName === 'P') {
+            setHoveredP(el)
+        }
         }
 
         function handleMouseLeave(e) {
             setTimeout(() => {
                 const toolbarHovered = document.querySelector(".toolbar-floating")?.matches(":hover")
                 const stillInsideBook = bookRef.current?.contains(document.activeElement)
-                if (!toolbarHovered && !stillInsideBook) {
+                if (!toolbarHovered && !stillInsideBook && !activeEditorP) {
                     setHoveredP(null)
                 }
             }, 200)
@@ -151,8 +163,27 @@ const VisualizeLei = () => {
             {/* CONTAINER em que a lei vai ser carregada */}
             <div className='book' id='book' ref={bookRef}></div>
 
+            {/* TIPTAP EDITOR */}
+            {editorBelowP && (
+                <div
+                    style={{
+                    position: 'absolute',
+                    top: editorBelowP.getBoundingClientRect().bottom + window.scrollY,
+                    left: editorBelowP.getBoundingClientRect().left + window.scrollX,
+                    width: editorBelowP.offsetWidth,
+                    zIndex: 9,
+                    backgroundColor: 'white',
+                    padding: '0.5rem',
+                    border: '1px solid #ccc',
+                    borderRadius: '6px'
+                    }}
+                >
+                    <TiptapEditor onBlur={() => setEditorBelowP(null)} />
+                </div>
+            )}
+
             {/* TOOLBAR2 - flutuante */}
-            {hoveredP && (
+            {hoveredP && hoveredP !== activeEditorP && !hoveredP.classList.contains('cmt-user') && (
                 <div
                     className="toolbar-floating"
                     style={{
@@ -167,7 +198,47 @@ const VisualizeLei = () => {
                         setHoveredP(null)
                     }}
                 >
-                    <ToolBar2 bookRef={bookRef} />
+                    <ToolBar2
+                        bookRef={bookRef}
+                        editorIsActive={hoveredP && activeEditorP === hoveredP}
+                        onToggleEditor={() => {
+                            if (!hoveredP) return
+
+                            const alreadyActive = activeEditorP === hoveredP
+
+                            //Fechar se já está ativo
+                            if (alreadyActive) {
+                                hoveredP.parentNode.querySelectorAll('.editor-holder').forEach(el => el.remove())
+                                setActiveEditorP(null)
+                                return
+                            }
+
+                            // Remove qualquer outro editor aberto
+                            bookRef.current.querySelectorAll('.editor-holder').forEach(el => el.remove())
+
+                            // Cria o novo do editor
+                            const editorDiv = document.createElement('div')
+                            editorDiv.className = 'editor-holder'
+                            hoveredP.parentNode.insertBefore(editorDiv, hoveredP.nextSibling)
+
+                            const root = createRoot(editorDiv)
+                            root.render(<TiptapEditor
+                                onSubmit={(html) => {
+                                    //Remove o editor
+                                    editorDiv.remove()
+                                    setActiveEditorP(null)
+                                    //Cria o elemento DOM com o conteúdo do comentário
+                                    const comentario = document.createElement('div')
+                                    comentario.className = 'cmt-user'
+                                    comentario.innerHTML = html
+                                    hoveredP.parentNode.insertBefore(comentario, hoveredP.nextSibling)
+                                }} 
+                            />)
+
+                            // Marcar o <p> como ativo
+                            setActiveEditorP(hoveredP)
+                        }}
+                        />
                 </div>
             )}
 

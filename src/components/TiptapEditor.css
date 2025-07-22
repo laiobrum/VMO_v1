@@ -1,0 +1,73 @@
+.ProseMirror {
+  outline: none;
+}
+
+.editor-holder {
+
+}
+.editor-container {
+  
+  background-color: rgba(228, 228, 228, 0.463);
+  margin-bottom: 6px;
+  padding: 4px;
+  border-radius: 8px;
+}
+.cmt-user {
+  font-family: 'Roboto', 'Segoe UI', sans-serif;
+  font-size: 0.85em;
+  color: #414141;
+  margin-bottom: 5px;
+  margin-left: 1px;
+  border-left: 3px solid #2d6cdf;
+  background-color: #2d6bdf0f;
+  border-radius: 4px;
+}
+.txtBoxContainer {
+  border: 1px rgba(0, 0, 0, 0.215) solid;
+  border-radius: 5px;
+  background: linear-gradient(to bottom, #fff, #f5f5f5);
+  margin-bottom: 5px;
+}
+.btnTxtContainer {
+  gap: 10px;
+  display: flex;
+  justify-content: end;
+  
+}
+.btnTxt {
+  background-color: var(--btnColor-1);
+  border: 1px solid transparent;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 0.4em 1em;
+}
+.btnTxt:hover {
+  background-color: var(--btnColor-2);
+}
+
+
+
+.editor-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.editor-controls button {
+  background: linear-gradient(to bottom, #f6f6f6, #dadada);
+  border: none;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.editor-controls input[type="color"] {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+}
+

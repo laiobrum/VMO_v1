@@ -16,8 +16,8 @@ import { useAdminAccess } from "./hooks/useAdminAccess"
 import InserirLeis from "./components/InserirLeis"
 // import TesteLei from "./pages/TesteLei"
 import TesteLei from "./components/TesteLei"
-import TodasLeis from "./pages/Leis/TodasLeis"
-import VisualizeLei from "./pages/Leis/VisualizeLei"
+import TodasLeis from "./pages/TodasLeis"
+import VisualizeLei from "./pages/VisualizeLei"
 import CompararLeis from "./components/CompararLeis"
 
 function App() {

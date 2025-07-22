@@ -31,14 +31,15 @@
   font-style: italic;
   color: rgb(0, 0, 0);
 }
-
 .toolContainer {
-  top: 7px;
+  top: -9px;
+  left: -25px;
   display: flex;
   justify-content: center;
   gap: 1px;
   align-items: center; /* opcional */
   position: relative;
+  transition: 5ms ease;
 }
 .btnTool {
   font-size: 1.2em;
@@ -59,6 +60,7 @@
   background-color: #4850ef;
   color: #ffffff;
 }
+
 .mtContainer {
   display: flex;
   gap: 1px;
@@ -177,12 +179,26 @@
 /* TOOLBAR2 */
 .toolbar2 {
   display: flex;
+  gap: 1px;
   flex-direction: column;
   max-width: max-content;
   margin: 10px 4px 10px 10px;
 }
-.toolbar2 button {
-  padding: 1px 2px;
+.btnTool2 {
+  background-color: #dcdefa;
+  color: var(--btnColor-2);
+  border: 1px solid #4850ef49;
+  padding: 5px 7px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.btnTool2:hover {
+  background-color: #4850ef;
+  color: white;
+}
+.btnTool2.active {
+  background-color: #4850ef;
+  color: white;
 }
 /* LAWSIDEBAR */
 .lawSideBar {
