@@ -9,70 +9,83 @@ import '../pages/lei.css'
 import { ImBold } from 'react-icons/im';
 import { IoMdSave } from "react-icons/io";
 import { MdFormatUnderlined } from 'react-icons/md';
+import { IoSettingsOutline } from "react-icons/io5";
 import './ToolBar.css'
 import AlertMessage from './AlertMessage';
 import { useToggleTool } from '../hooks/useToggleTool';
 import { useSaveUserAlterations } from '../hooks/useSaveUserAlterations';
+import { useFetchOriginalLei } from '../hooks/useFetchOriginalLei';
 
-const ToolBar = ({bookRef, user, leiId}) => {
+const ToolBar = ({bookRef, user, leiId, onRestaurarTxtOriginal, modoOriginalAtivo, setModoOriginalAtivo}) => {
   const [alertMsg, setAlertMsg] = useState(null)
   const [showRevogados, setShowRevogadosState] = useState(false)
   const [showComentarios, setShowComentarios] = useState(true)
 
   //HOOKS
   //Salva alterações ao apertar botão
-  const {save, salvando} = useSaveUserAlterations( {bookRef, userId: user?.uid, leiId } )
+  const {save, salvando} = useSaveUserAlterations( {bookRef, userId: user?.uid, leiId, onRestaurarTxtOriginal } )
   //Seleção da ferramenta a ser usada
   const { highlightColor, boldMode, underlineMode, eraseMode, toggleTool } = useToggleTool()
+  //Texto original, sem marcações ou comentários
+  const { fetchOriginal, loadingOriginal, error } = useFetchOriginalLei()
 
   // Funções de marcação
   const handleTool = () => {
+    //Modo texto original - impede marcação da lei
+    if (modoOriginalAtivo) {
+      const isTextoOriginalBtn = event?.target?.closest('.btnToolClicked')?.textContent?.includes('Texto Original')
+      if (!isTextoOriginalBtn) {
+        setAlertMsg('Você está visualizando o texto original. Clique novamente em <span class="btnTool">Texto Original</span> para voltar ao modo de edição.')
+      }
+      return
+    }
+
     const selection = window.getSelection()
     if (!selection || selection.isCollapsed) return
     const range = selection.getRangeAt(0)
 
-  // VERIFICA SE A SELEÇÃO COMEÇA OU INTERSECTA TRECHO MARCADO
-  const selectionHasMarkings = (selection, range, rootNode) => {
-    // Verifica se ponto inicial da seleção já está dentro de marcação
-    let node = selection.anchorNode
-    while (node && node !== rootNode) {
-      if (
-        node.nodeType === Node.ELEMENT_NODE &&
-        node.tagName === 'SPAN' &&
-        /(yellowHL|greenHL|pinkHL|boldTxt|underlineTxt)/.test(node.className)
-      ) {
-        return true
+    // VERIFICA SE A SELEÇÃO COMEÇA OU INTERSECTA TRECHO MARCADO
+    const selectionHasMarkings = (selection, range, rootNode) => {
+      // Verifica se ponto inicial da seleção já está dentro de marcação
+      let node = selection.anchorNode
+      while (node && node !== rootNode) {
+        if (
+          node.nodeType === Node.ELEMENT_NODE &&
+          node.tagName === 'SPAN' &&
+          /(yellowHL|greenHL|pinkHL|boldTxt|underlineTxt)/.test(node.className)
+        ) {
+          return true
+        }
+        node = node.parentNode
       }
-      node = node.parentNode
+
+      // Verifica se seleção cruza marcações em qualquer ponto
+      const walker = document.createTreeWalker(
+        range.commonAncestorContainer,
+        NodeFilter.SHOW_ELEMENT,
+        {
+          acceptNode: (node) => {
+            const nodeRange = document.createRange()
+            nodeRange.selectNodeContents(node)
+            if (
+              range.intersectsNode(node) &&
+              node.tagName === 'SPAN' &&
+              /(yellowHL|greenHL|pinkHL|boldTxt|underlineTxt)/.test(node.className)
+            ) {
+              return NodeFilter.FILTER_ACCEPT
+            }
+            return NodeFilter.FILTER_SKIP
+          }
+        }
+      )
+      return walker.nextNode() !== null
     }
 
-    // Verifica se seleção cruza marcações em qualquer ponto
-    const walker = document.createTreeWalker(
-      range.commonAncestorContainer,
-      NodeFilter.SHOW_ELEMENT,
-      {
-        acceptNode: (node) => {
-          const nodeRange = document.createRange()
-          nodeRange.selectNodeContents(node)
-          if (
-            range.intersectsNode(node) &&
-            node.tagName === 'SPAN' &&
-            /(yellowHL|greenHL|pinkHL|boldTxt|underlineTxt)/.test(node.className)
-          ) {
-            return NodeFilter.FILTER_ACCEPT
-          }
-          return NodeFilter.FILTER_SKIP
-        }
-      }
-    )
-    return walker.nextNode() !== null
-  }
-
-  if (!eraseMode && selectionHasMarkings(selection, range, bookRef?.current)) {
-    setAlertMsg("A seleção inclui partes já marcadas.")
-    selection.removeAllRanges()
-    return
-  }
+    if (!eraseMode && selectionHasMarkings(selection, range, bookRef?.current)) {
+      setAlertMsg("A seleção inclui partes já marcadas.")
+      selection.removeAllRanges()
+      return
+    }
     
     // Clona os nós selecionados (com HTML)
     const fragment = range.cloneContents()
@@ -156,14 +169,17 @@ const ToolBar = ({bookRef, user, leiId}) => {
   // REGISTRA O LISTENER GLOBAL DE SELEÇÃO (MANTÉM FUNCIONALIDADE DE MARCAÇÃO)
   useEffect(() => {
     const isActive = highlightColor || boldMode || underlineMode || eraseMode
+
+    const listener = (e) => handleTool(e)
+
     if (isActive) {
-      document.addEventListener('mouseup', handleTool)
+      document.addEventListener('mouseup', listener)
     }
 
     return () => {
-      document.removeEventListener('mouseup', handleTool)
+      document.removeEventListener('mouseup', listener)
     }
-  }, [highlightColor, boldMode, underlineMode, eraseMode])
+  }, [highlightColor, boldMode, underlineMode, eraseMode, modoOriginalAtivo])
 
   // REGISTRA O CLICK PARA APAGAR SPAN (SOMENTE EM eraseMode)
   useEffect(() => {
@@ -219,27 +235,70 @@ const ToolBar = ({bookRef, user, leiId}) => {
     })
   }
 
+  const restaurarTextoOriginal = async () =>{
+    if (modoOriginalAtivo) {
+      //Voltar para texto com marcações
+      onRestaurarTxtOriginal([])// esvazia o textoOriginal > volta ao mergeDisps
+      setModoOriginalAtivo(false)
+    } else {
+      // Carrega o texto original
+      const textoOriginal = await fetchOriginal(leiId)
+      onRestaurarTxtOriginal(textoOriginal)// <- Envia para o pai, VisualizeLei
+      setModoOriginalAtivo(true)
+    }
+  }
+
   return (
     <>
     <div className='toolbar'>
         <div className='toolContainer'>
+          {/* Marca-textos */}
           <div className='mtContainer'>
-            <button className={`mt3 btnMarcaTexto ${highlightColor === 'pink' ? 'btnMarcaTextoClicked' : ""}`} title='Marca-texto' onClick={() => toggleTool('highlighter', 'pink')}><div className='colorMT color3MT'></div> <PiHighlighterFill /> </button>
-            <button className={`mt2 btnMarcaTexto ${highlightColor === 'green' ? 'btnMarcaTextoClicked' : ""}`} title='Marca-texto' onClick={() => toggleTool('highlighter', 'green')}><div className='colorMT color2MT'></div> <PiHighlighterFill /> </button>
-            <button className={`mt1 btnMarcaTexto ${highlightColor === 'yellow' ? 'btnMarcaTextoClicked' : ""}`} title='Marca-texto' onClick={() => toggleTool('highlighter', 'yellow')}><div className='colorMT color1MT'></div> <PiHighlighterFill /> </button>
+            <button 
+              className={`mt3 btnMarcaTexto ${highlightColor === 'pink' ? 'btnMarcaTextoClicked' : ""}`} title='Marca-texto' onClick={() => toggleTool('highlighter', 'pink')}> <div className='colorMT color3MT'></div> <PiHighlighterFill /> 
+            </button>
+            <button 
+              className={`mt2 btnMarcaTexto ${highlightColor === 'green' ? 'btnMarcaTextoClicked' : ""}`} title='Marca-texto' onClick={() => toggleTool('highlighter', 'green')}><div className='colorMT color2MT'></div> <PiHighlighterFill /> 
+            </button>
+            <button 
+              className={`mt1 btnMarcaTexto ${highlightColor === 'yellow' ? 'btnMarcaTextoClicked' : ""}`} title='Marca-texto' onClick={() => toggleTool('highlighter', 'yellow')}><div className='colorMT color1MT'></div> <PiHighlighterFill /> 
+            </button>
           </div>
-          <button className={`btnTool ${boldMode ? "btnToolClicked" : ""}`} title='Negrito' onClick={() => toggleTool('bold')} ><ImBold /></button>
-          <button className={`btnTool ${underlineMode ? "btnToolClicked" : ""}`} title='Sublinhado' onClick={() => toggleTool('underline')}><MdFormatUnderlined /></button>
-          <button className={`btnTool ${eraseMode ? "btnToolClicked" : ""}`} title='Apagar marcações' onClick={() => toggleTool('erase')}><PiEraserFill /></button>
-          <button className={`btnTool ${showComentarios ? 'btnToolClicked' : ''}`} onClick={toggleComentarios} title='Exibir comentários'><BiSolidCommentEdit /></button>
-          <button className='btnTool' title='Exibir jurisprudência'><GoLaw /></button>
-          <button className='btnTool' title='Exibir texto revogado' onClick={toggleRevogados}> <CgFormatStrike /></button>                    
-          <button className='btnTool' title='As alterações são salvas automaticamente a cada 30 segundos' onClick={save} disabled={salvando} >{salvando ? <AiOutlineLoading3Quarters className='loadingIcon' /> :<IoMdSave />}</button>
+          {/* ------------------ */}
+          {/* Outros comandos: */}
+          <button 
+            className={`btnTool ${boldMode ? "btnToolClicked" : ""}`} title='Negrito' onClick={() => toggleTool('bold')} ><ImBold />
+          </button>
+          <button 
+            className={`btnTool ${underlineMode ? "btnToolClicked" : ""}`} title='Sublinhado' onClick={() => toggleTool('underline')}><MdFormatUnderlined />
+          </button>
+          <button 
+            className={`btnTool ${eraseMode ? "btnToolClicked" : ""}`} title='Apagar marcações' onClick={() => toggleTool('erase')}><PiEraserFill />
+          </button>
+          <button 
+            className={`btnTool ${showComentarios ? 'btnToolClicked' : ''}`} onClick={toggleComentarios} title='Exibir comentários'><BiSolidCommentEdit />
+          </button>
+          <button 
+            className='btnTool' title='Exibir jurisprudência'><GoLaw />
+          </button>
+          <button 
+            className='btnTool' title='Exibir texto revogado' onClick={toggleRevogados}> <CgFormatStrike />
+          </button>                    
+          <button 
+            className='btnTool' title='As alterações são salvas automaticamente a cada 30 segundos' onClick={save} disabled={salvando} >{salvando ? <AiOutlineLoading3Quarters className='loadingIcon' /> :<IoMdSave />}
+          </button>
 
-          <button className='btnTool' title='Exibir texto revogado' onClick={toggleRevogados}>s/ marcações</button>
-          <button className='btnTool' title='Exibir texto revogado' onClick={toggleRevogados}>tamanho txt</button>
-          <button className='btnTool' title='Exibir texto revogado' onClick={toggleRevogados}>Refs cruzadas</button>
-          <button className='btnTool' title='Exibir texto revogado' onClick={toggleRevogados}>lawSideBar</button>
+          {/* Outras ferramentas: */}
+          <div className='dropdownTool'>
+            <button className="btnTool dropdownTool-toggle" title="Outras ferramentas"><IoSettingsOutline /></button>
+            <div className='dropdownTool-menu'>
+              <button className={`btnTool ${modoOriginalAtivo ? 'btnToolClicked' : ''}`} title='Exibir lei original' onClick={restaurarTextoOriginal} disabled={loadingOriginal}>Texto Original</button>
+              <button className='btnTool' title='Exibir texto revogado' onClick={toggleRevogados}>tamanho txt</button>
+              <button className='btnTool' title='Exibir texto revogado' onClick={toggleRevogados}>Refs cruzadas</button>
+              <button className='btnTool' title='Exibir texto revogado' onClick={toggleRevogados}>lawSideBar</button>
+            </div>
+          </div>
+
         </div>
     </div>
     <div className='alertContainer'>

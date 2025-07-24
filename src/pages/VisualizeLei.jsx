@@ -19,23 +19,30 @@ const VisualizeLei = () => {
     const [editorBelowP, setEditorBelowP] = useState(null)
     const [activeEditorP, setActiveEditorP] = useState(null)
     const [isToolbarHovered, setIsToolbarHovered] = useState(false)
+    const [modoOriginalAtivo, setModoOriginalAtivo] = useState(false)
+    const [textoOriginal, setTextoOriginal] = useState([])
     
     //HOOKS:
     //Fetch dos dados - pega a lei alterada pelo usuário, se não tiver, pega a lei original - coloca no estado "Lei"
     const { mergedDisps, loading, error } = useMergedLaw({ userId: user?.uid, leiId })
-
+    //Hook da lawSideBar - tem que atualizar, visto que mudou a estrutura de dados
     const {documents: leis} = useFetchDocuments('leis')
 
     useEffect(() => {
-        if (!mergedDisps?.length) return
-        const nodes = mergedDisps.map(d => {
+        const book = bookRef.current
+        if (!book) return
+
+        book.innerHTML = ''
+        //Decide se pega o texto original ou o mergeDisps
+        const base = textoOriginal.length > 0 ? textoOriginal : mergedDisps
+        if (!base || base.length === 0) return
+
+        // Cria os nós DOM dos parágrafos
+        const nodes = base.map(d => {
             const div = document.createElement('div')
             div.innerHTML = d.html
             return div.firstChild
         }).filter(Boolean)
-
-        const book = bookRef.current
-        book.innerHTML = ''
 
         const columnsPerPage = 3
         const maxLinesPerColumn = 30 //Limite de linhas por coluna
@@ -108,13 +115,10 @@ const VisualizeLei = () => {
         
         function handleMouseOver(e) {
         const el = e.target
-
         // Ignora se estiver dentro de comentário
         if (el.closest('.cmt-user')) return
-
         // Ignora se estiver dentro do editor
         if (el.closest('.editor-holder')) return
-
         // Só aceita <p> diretamente
         if (el.tagName === 'P') {
             setHoveredP(el)
@@ -141,7 +145,7 @@ const VisualizeLei = () => {
             book.removeEventListener('mouseleave', handleMouseLeave)
         }
 
-    }, [mergedDisps])//Não colocar isToolbarHovered, pq sempre quando hover, ele restarta o useEffect e tira as marcações!
+    }, [mergedDisps, textoOriginal])//Não colocar isToolbarHovered, pq sempre quando hover, ele restarta o useEffect e tira as marcações! Nem o activeEditorP, pq ele estraga tudo!
 
     if (loading) return <p>Carregando...</p>
     if (error) return <p>Ocorreu algum erro</p>
@@ -151,7 +155,7 @@ const VisualizeLei = () => {
         <div className="law_container">
             {/* TOOLBAR e botão COMPARAR fixos */}
             <div className="toolContainer">
-                <ToolBar bookRef={bookRef} user={user} leiId={leiId} />
+                <ToolBar bookRef={bookRef} user={user} leiId={leiId} onRestaurarTxtOriginal={setTextoOriginal} modoOriginalAtivo={modoOriginalAtivo} setModoOriginalAtivo={setModoOriginalAtivo} />
                 {/* BARRA DE LEIS */}
                 <div className="lawSideBar">
                     {leis.map((lei)=>(
@@ -224,12 +228,15 @@ const VisualizeLei = () => {
                             const root = createRoot(editorDiv)
                             root.render(<TiptapEditor
                                 onSubmit={(html) => {
-                                    //Remove o editor
                                     editorDiv.remove()
                                     setActiveEditorP(null)
-                                    //Cria o elemento DOM com o conteúdo do comentário
+
+                                    if (!html || html.trim() === '<p></p>' || html.trim() === '<p><br></p>') {
+                                        return // não cria comentário vazio
+                                    }
+
                                     const comentario = document.createElement('div')
-                                    comentario.className = 'cmt-user'
+                                    comentario.className = 'cmt-user alterado'
                                     comentario.innerHTML = html
                                     hoveredP.parentNode.insertBefore(comentario, hoveredP.nextSibling)
                                 }} 

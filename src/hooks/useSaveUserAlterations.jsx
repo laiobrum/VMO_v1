@@ -22,33 +22,58 @@ export const useSaveUserAlterations = ({ bookRef, userId, leiId }) => {
     try {
       setSalvando(true)
 
-      //Busca parágrafos marcados como alterados
-      const alteredParagraphs = Array.from(bookRef.current.querySelectorAll(".alterado"))
-      const altered = []
+      const alteredElements = Array.from(bookRef.current.querySelectorAll(".alterado"))
 
-      for (const p of alteredParagraphs) {
-        const id = p.getAttribute('id')
+      for (const el of alteredElements) {
+        let id, html = null, comentario = null
+
+        // Caso 1: <p class="alterado">...</p>
+        if (el.tagName === 'P') {
+          id = el.getAttribute('id')
+          if (!id) continue
+          html = el.outerHTML.trim()
+        }
+
+        // Caso 2: <div class="cmt-user alterado"><p>comentário</p></div>
+        else if (el.classList.contains('cmt-user')) {
+        let prev = el.previousElementSibling
+        while (prev && prev.tagName !== 'P') {
+          prev = prev.previousElementSibling
+        }
+        if (!prev) continue
+
+        id = prev.getAttribute('id')
         if (!id) continue
 
-        p.classList.remove('alterado')
+        const pElement = document.getElementById(id)
+        if (!pElement) continue
 
-        const alteredHtml = document.getElementById(id)?.outerHTML.trim()
-        if (!alteredHtml) continue
+        html = pElement.outerHTML.trim()
 
-        altered.push({ id, html: alteredHtml})
+        if (el.textContent.trim()) {
+          const clone = el.cloneNode(true)
+          clone.classList.remove('alterado')
+          comentario = clone.outerHTML.trim()
+        }
       }
 
-      // 3. SALVA SOMENTE OS QUE FORAM ALTERADOS
-      const dispsRef = collection(db, "users", userId, "alteracoesUsuario", leiId, "disps")
-      for (const p of altered) {
-        await setDoc(doc(dispsRef, p.id), {
-          id: p.id,
-          html: p.html,
-          atualizadoEm: new Date()
+        // Não faz nada se não encontrou html nem comentário
+        if (!html && !comentario) continue
+
+        // Remove a classe 'alterado' do original
+        el.classList.remove('alterado')
+
+        // Salva no Firestore
+        const docRef = doc(db, "users", userId, "alteracoesUsuario", leiId, "disps", id)
+        await setDoc(docRef, {
+          id,
+          html,
+          atualizadoEm: new Date(),
+          ...(comentario && { comentario }) // só inclui se existir
         })
       }
 
-      console.log(`Salvos ${altered.length} parágrafos alterados`)
+      console.log(`Salvos ${alteredElements.length} elementos alterados`)
     } catch (error) {
       console.error("Erro ao salvar alterações do usuário:", error)
     } finally {

@@ -20,7 +20,7 @@ export const useAuthentication = () => {
     const login = async(email, password) => {
         checkIfItsCancelled()
         setLoading(true)
-        setError('')
+        setError(null)
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password)
             const user = userCredential.user
@@ -48,7 +48,7 @@ export const useAuthentication = () => {
     const createUser = async(data, password) => {  
         checkIfItsCancelled()
         setLoading(true)
-        setError('')
+        setError(null)
         try {
             //Criação de usuário no Authentication
             const {user} = await createUserWithEmailAndPassword(auth, data.email, password)

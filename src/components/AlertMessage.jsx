@@ -15,7 +15,10 @@ const AlertMessage = ({message, duration = 3000, onClose}) => {
 
     if(!visible) return null
   return (
-    <div className='alertMsg fade'>{message}</div>
+    <div 
+    className='alertMsg fade'
+    dangerouslySetInnerHTML={{ __html: message }}
+    />
   )
 }
 

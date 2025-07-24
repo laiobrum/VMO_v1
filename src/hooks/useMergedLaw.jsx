@@ -18,22 +18,25 @@ export const useMergedLaw = ({ userId, leiId }) => {
           getDocs(alteredRef)
         ])
 
+        //Mapeamento do texto de lei original
         const originalMap = {}
         originalSnap.forEach(doc => {
           const data = doc.data()
           originalMap[doc.id] = { id: doc.id, html: data.html, ordem: data.ordem }
         })
 
+        //Mapeamento das alterações presentes no BD
         alteredSnap.forEach(doc => {
           const data = doc.data()
+          //Se houver uma alteração para um id existente, ela substitui o html, mas mantém a ordem original.
           if (originalMap[doc.id]) {
             originalMap[doc.id] = {
               id: doc.id,
-              html: data.html,
+              html: data.html, //ALTERADO - troca o html, se tiver dentro do DB de alterados
               ordem: originalMap[doc.id].ordem  // mantém a ordem do original
             }
           } else {
-            // caso raro: alteração do usuário sem documento original
+            // caso raro: Se a alteração não tiver correspondente no original, é adicionada com ordem = 99999 (vai pro final).
             originalMap[doc.id] = {
               id: doc.id,
               html: data.html,
@@ -42,6 +45,7 @@ export const useMergedLaw = ({ userId, leiId }) => {
           }
         })
 
+        //Converte o originalMap em array, ordena pela ordem e armazena em mergedDisps.
         const merged = Object.values(originalMap).sort((a, b) => a.ordem - b.ordem)
         setMergedDisps(merged)
       } catch (err) {

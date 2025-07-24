@@ -13,13 +13,13 @@ const TodasLeis = () => {
             {error && <p>Ocorreu algum erro</p>}
         </div>
 
-        <ul>
+        <div className="leisContainer">
             {leis.map((lei) => (
-                <li key={lei.id}>
+                <p key={lei.id}>
                     <NavLink to={`/leis/${lei.id}`}>{lei.aTitle}</NavLink>
-                </li>
+                </p>
             ))}
-        </ul>
+        </div>
     </div>
   )
 }

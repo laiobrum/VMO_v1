@@ -1,10 +1,6 @@
 .ProseMirror {
   outline: none;
 }
-
-.editor-holder {
-
-}
 .editor-container {
   
   background-color: rgba(228, 228, 228, 0.463);
@@ -45,16 +41,12 @@
 .btnTxt:hover {
   background-color: var(--btnColor-2);
 }
-
-
-
 .editor-controls {
   display: flex;
   gap: 0.5rem;
   align-items: center;
 }
-
-.editor-controls button {
+.editorBtn {
   background: linear-gradient(to bottom, #f6f6f6, #dadada);
   border: none;
   padding: 4px 8px;
@@ -63,11 +55,28 @@
   cursor: pointer;
 }
 
-.editor-controls input[type="color"] {
+/* COLOR PICKER */
+.color-picker-wrapper {
+  position: relative;
+}
+.colorBtn {
+  color: blue;
+  background: linear-gradient(180deg, white, #ff00004e);
   border: none;
-  background: transparent;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  border-radius: 4px;
   cursor: pointer;
-  width: 28px;
-  height: 28px;
+
+}
+.color-picker-popover {
+  position: absolute;
+  background: linear-gradient(to bottom, #fff, #ededed);
+  top: 120%; /* ajustável */
+  right: 0px;
+  z-index: 1000;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.308);
+  padding: 5px;
+  border-radius: 8px;
 }
 
