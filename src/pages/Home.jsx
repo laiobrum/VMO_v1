@@ -14,8 +14,6 @@ const Home = () => {
         <Testes user={user} />
         <h2>Acesso rápido</h2>
 
-        <TiptapEditor />
-
         <div className="leisContainer">
           {loading && <li>Carregando...</li>}
             {leis.map((lei) => (

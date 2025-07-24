@@ -38,11 +38,11 @@ const VisualizeLei = () => {
         if (!base || base.length === 0) return
 
         // Cria os nós DOM dos parágrafos
-        const nodes = base.map(d => {
+        const nodes = base.flatMap(d => {
             const div = document.createElement('div')
-            div.innerHTML = d.html
-            return div.firstChild
-        }).filter(Boolean)
+            div.innerHTML = d.html || ""
+            return Array.from(div.childNodes).filter(n => n.nodeType === 1)
+          })
 
         const columnsPerPage = 3
         const maxLinesPerColumn = 30 //Limite de linhas por coluna

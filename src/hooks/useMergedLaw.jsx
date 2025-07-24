@@ -25,21 +25,25 @@ export const useMergedLaw = ({ userId, leiId }) => {
           originalMap[doc.id] = { id: doc.id, html: data.html, ordem: data.ordem }
         })
 
-        //Mapeamento das alterações presentes no BD
+        //Insere a a alteração do usuário no texto original
         alteredSnap.forEach(doc => {
           const data = doc.data()
+          const comentarioHTML = data.comentario ? data.comentario : ''
+          const novoHtml = (data.html || "") + comentarioHTML
+          console.log(novoHtml)
+
           //Se houver uma alteração para um id existente, ela substitui o html, mas mantém a ordem original.
           if (originalMap[doc.id]) {
             originalMap[doc.id] = {
               id: doc.id,
-              html: data.html, //ALTERADO - troca o html, se tiver dentro do DB de alterados
+              html: novoHtml, // troca o html, se tiver dentro do DB de alterados
               ordem: originalMap[doc.id].ordem  // mantém a ordem do original
             }
           } else {
             // caso raro: Se a alteração não tiver correspondente no original, é adicionada com ordem = 99999 (vai pro final).
             originalMap[doc.id] = {
               id: doc.id,
-              html: data.html,
+              html: novoHtml,
               ordem: 99999 // joga pro final, mas você pode escolher outro critério
             }
           }
