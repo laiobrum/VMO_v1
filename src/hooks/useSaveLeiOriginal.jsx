@@ -7,15 +7,35 @@ leis (coleção)
 │   ├─ numLeiR: "1990"
 │   ├─ createdAt: timestamp
 │   └─ disps (subcoleção)
-│       ├─ art1
+│       ├─ art1 (documento)
 │       │   ├─ id: "art1"
 │       │   ├─ html: "<p id='art1'>Art. 1º ...</p>"
 │       │   ├─ ordem: 1
-│       │   └─ createdAt: timestamp
-│       ├─ art2
-│       │   └─ ...
+│       │   ├─ createdAt: timestamp
+│       │   └─ comentariosPublicos (subcoleção)
+│       │       ├─ comentario_abc123 (documento)
+│       │       │   ├─ userId: "abc123"
+│       │       │   ├─ nomeAutor: "Maria F."
+│       │       │   ├─ comentario: "<p>Texto público...</p>"
+│       │       │   ├─ criadoEm: timestamp
+│       │       │   └─ reportado: false
+│       │       └─ comentario_def456 (documento)
+│       │           ├─ userId: "xyz789"
+│       │           ├─ nomeAutor: "João S."
+│       │           ├─ comentario: "<p>Outro comentário...</p>"
+│       │           ├─ criadoEm: timestamp
+│       │           └─ reportado: true
+│       │
+│       ├─ art2 (documento)
+│       │   ├─ id: "art2"
+│       │   ├─ html: "<p id='art2'>Art. 2º ...</p>"
+│       │   ├─ ordem: 2
+│       │   ├─ createdAt: timestamp
+│       │   └─ comentariosPublicos (subcoleção)
+│       │       └─ ...
+│       │
+│       └─ ...
 */
-
 import { useState } from 'react';
 import { db } from '../firebase/config'
 import { collection, addDoc, serverTimestamp, setDoc, doc } from "firebase/firestore";

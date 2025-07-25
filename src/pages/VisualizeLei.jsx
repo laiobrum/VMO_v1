@@ -150,7 +150,7 @@ const VisualizeLei = () => {
     if (loading) return <p>Carregando...</p>
     if (error) return <p>Ocorreu algum erro</p>
 
-    return (     
+    return (
         <>
         <div className="law_container">
             {/* TOOLBAR e botão COMPARAR fixos */}
@@ -159,7 +159,7 @@ const VisualizeLei = () => {
                 {/* BARRA DE LEIS */}
                 <div className="lawSideBar">
                     {leis.map((lei)=>(
-                        <NavLink key={lei.id} className="lawItem" to={`/leis/${lei.id}`}><div>{lei.title}</div></NavLink>
+                        <NavLink key={lei.id} className="lawItem" to={`/leis/${lei.id}`}><div>{lei.aTitle}</div></NavLink>
                     ))}
                 </div>
             </div>

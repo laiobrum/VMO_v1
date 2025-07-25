@@ -30,7 +30,6 @@ export const useMergedLaw = ({ userId, leiId }) => {
           const data = doc.data()
           const comentarioHTML = data.comentario ? data.comentario : ''
           const novoHtml = (data.html || "") + comentarioHTML
-          console.log(novoHtml)
 
           //Se houver uma alteração para um id existente, ela substitui o html, mas mantém a ordem original.
           if (originalMap[doc.id]) {

@@ -7,7 +7,7 @@ import { CgFormatStrike } from "react-icons/cg";
 import { GoLaw } from "react-icons/go";
 import '../pages/lei.css'
 import { ImBold } from 'react-icons/im';
-import { IoMdSave } from "react-icons/io";
+import { IoIosPeople, IoMdSave } from "react-icons/io";
 import { MdFormatUnderlined } from 'react-icons/md';
 import { IoSettingsOutline } from "react-icons/io5";
 import './ToolBar.css'
@@ -15,17 +15,18 @@ import AlertMessage from './AlertMessage';
 import { useToggleTool } from '../hooks/useToggleTool';
 import { useSaveUserAlterations } from '../hooks/useSaveUserAlterations';
 import { useFetchOriginalLei } from '../hooks/useFetchOriginalLei';
+import { ToggleSwitch } from './ToggleSwitch';
 
 const ToolBar = ({bookRef, user, leiId, onRestaurarTxtOriginal, modoOriginalAtivo, setModoOriginalAtivo}) => {
   const [alertMsg, setAlertMsg] = useState(null)
-  const [showRevogados, setShowRevogadosState] = useState(false)
-  const [showComentarios, setShowComentarios] = useState(true)
+  
+  
 
   //HOOKS
   //Salva alterações ao apertar botão
   const {save, salvando} = useSaveUserAlterations( {bookRef, userId: user?.uid, leiId, onRestaurarTxtOriginal } )
   //Seleção da ferramenta a ser usada
-  const { highlightColor, boldMode, underlineMode, eraseMode, toggleTool } = useToggleTool()
+  const { highlightColor, boldMode, underlineMode, eraseMode, showComentarios, showRevogados, toggleTool } = useToggleTool(bookRef)
   //Texto original, sem marcações ou comentários
   const { fetchOriginal, loadingOriginal, error } = useFetchOriginalLei()
 
@@ -169,13 +170,10 @@ const ToolBar = ({bookRef, user, leiId, onRestaurarTxtOriginal, modoOriginalAtiv
   // REGISTRA O LISTENER GLOBAL DE SELEÇÃO (MANTÉM FUNCIONALIDADE DE MARCAÇÃO)
   useEffect(() => {
     const isActive = highlightColor || boldMode || underlineMode || eraseMode
-
     const listener = (e) => handleTool(e)
-
     if (isActive) {
       document.addEventListener('mouseup', listener)
     }
-
     return () => {
       document.removeEventListener('mouseup', listener)
     }
@@ -214,27 +212,7 @@ const ToolBar = ({bookRef, user, leiId, onRestaurarTxtOriginal, modoOriginalAtiv
     }
   }, [eraseMode, bookRef])
 
-  const toggleRevogados = () => {
-    setShowRevogadosState(prev => {
-      const newState = !prev
-      const delTags = bookRef.current?.querySelectorAll('.revogado')
-      delTags?.forEach(delTag => {
-        delTag.classList.toggle('aparecer', newState)
-      })
-      return newState
-    })
-  }
-
-  const toggleComentarios = () => {
-    const newState = !showComentarios
-    setShowComentarios(newState)
-
-    const comentarios = bookRef.current?.querySelectorAll('.cmt-user')
-    comentarios?.forEach(comentario => {
-      comentario.style.display = newState ? 'block' : 'none'
-    })
-  }
-
+  
   const restaurarTextoOriginal = async () =>{
     if (modoOriginalAtivo) {
       //Voltar para texto com marcações
@@ -275,14 +253,18 @@ const ToolBar = ({bookRef, user, leiId, onRestaurarTxtOriginal, modoOriginalAtiv
           <button 
             className={`btnTool ${eraseMode ? "btnToolClicked" : ""}`} title='Apagar marcações' onClick={() => toggleTool('erase')}><PiEraserFill />
           </button>
+          {/* Comentários */}
           <button 
-            className={`btnTool ${showComentarios ? 'btnToolClicked' : ''}`} onClick={toggleComentarios} title='Exibir comentários'><BiSolidCommentEdit />
+            className={`btnTool ${showComentarios ? 'btnToolClicked' : ''}`} onClick={()=>toggleTool('comentarios')} title='Exibir comentários'><BiSolidCommentEdit />
+          </button>
+          <button 
+            className='btnTool' title='Exibir comentários'><IoIosPeople />
           </button>
           <button 
             className='btnTool' title='Exibir jurisprudência'><GoLaw />
           </button>
           <button 
-            className='btnTool' title='Exibir texto revogado' onClick={toggleRevogados}> <CgFormatStrike />
+            className={`btnTool ${showRevogados ? 'btnToolClicked' : ''}`} title='Exibir texto revogado' onClick={()=>toggleTool('revogados')}> <CgFormatStrike />
           </button>                    
           <button 
             className='btnTool' title='As alterações são salvas automaticamente a cada 30 segundos' onClick={save} disabled={salvando} >{salvando ? <AiOutlineLoading3Quarters className='loadingIcon' /> :<IoMdSave />}
@@ -292,10 +274,12 @@ const ToolBar = ({bookRef, user, leiId, onRestaurarTxtOriginal, modoOriginalAtiv
           <div className='dropdownTool'>
             <button className="btnTool dropdownTool-toggle" title="Outras ferramentas"><IoSettingsOutline /></button>
             <div className='dropdownTool-menu'>
-              <button className={`btnTool ${modoOriginalAtivo ? 'btnToolClicked' : ''}`} title='Exibir lei original' onClick={restaurarTextoOriginal} disabled={loadingOriginal}>Texto Original</button>
-              <button className='btnTool' title='Exibir texto revogado' onClick={toggleRevogados}>tamanho txt</button>
-              <button className='btnTool' title='Exibir texto revogado' onClick={toggleRevogados}>Refs cruzadas</button>
-              <button className='btnTool' title='Exibir texto revogado' onClick={toggleRevogados}>lawSideBar</button>
+              <button 
+                className={`btnSwitch ${modoOriginalAtivo ? 'btnSwitchClicked' : ''}`} title='Exibir lei original' onClick={restaurarTextoOriginal} disabled={loadingOriginal}><ToggleSwitch isOn={modoOriginalAtivo} handleToggle={restaurarTextoOriginal} />Texto original
+              </button>
+              <button className='btnTool' title='Exibir texto revogado' >tamanho txt</button>
+              <button className='btnTool' title='Exibir texto revogado' >Refs cruzadas</button>
+              <button className='btnTool' title='Exibir texto revogado' >Lazy load comments só da pág visível</button>
             </div>
           </div>
 

@@ -184,6 +184,85 @@
     opacity: 0;
   }
 }
+/* --------------------------------- */
+/* OUTRAS FERRAMENTAS - DROPDOWN */
+/* --------------------------------- */
+.dropdownTool {
+  position: relative;
+  display: inline-block;
+}
+.dropdownTool-toggle {
+  cursor: pointer;
+}
+.dropdownTool-menu {
+  display: none;
+  position: absolute;
+  left: 0px;
+  margin-top: 0;
+  background: rgba(255, 255, 255, 0.834);
+  border-radius: 6px;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 5px;
+  min-width: max-content;
+}
+.dropdownTool-menu .btnTool {
+  display: block;
+  width: 100%;
+  text-align: left;
+  margin: 2px 0;
+}
+/* Mostrar menu ao hover */
+.dropdownTool:hover .dropdownTool-menu {
+  display: block;
+}
+.btnSwitch {
+  font-size: 1.2em;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  font-weight: bolder;
+  padding: .3em .7em .3em .5em;
+  border: none;
+  background-color: #dcdefa;
+  color: var(--btnColor-2);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+.btnSwitchClicked {
+  background-color: #4850ef;
+  color: #ffffff;
+}
+/* Toggle Switch Button */
+.toggle-switch {
+  cursor: pointer;
+  display: inline-block;
+}
+.switch {
+  width: 50px;
+  height: 26px;
+  background-color: #ccc;
+  border-radius: 13px;
+  position: relative;
+  transition: background-color 0.3s ease;
+}
+.switch.on {
+  background-color: #4caf50;
+}
+.ball {
+  width: 22px;
+  height: 22px;
+  background-color: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.3s ease;
+}
+.switch.on .ball {
+  transform: translateX(24px);
+}
 /* TOOLBAR2 */
 .toolbar2 {
   display: flex;
@@ -213,10 +292,10 @@
   padding-left: 10px;
   position: fixed;
   top: 0;
-  right: -60px;
+  right: -130px;
   /* width: 100px; */
   height: 100vh;
-  z-index: 1; /* importante manter acima do conteúdo principal */
+  z-index: 10; /* importante manter acima do conteúdo principal */
   background-color: transparent; /* invisível */
   box-shadow: none;              /* sem sombra */
   overflow: visible;
@@ -248,34 +327,4 @@
 .lawItem:hover {
   transform: scale(1.3);
   background-color: #c3c6f5;
-}
-/* OUTRAS FERRAMENTAS - DROPDOWN */
-.dropdownTool {
-  position: relative;
-  display: inline-block;
-}
-.dropdownTool-toggle {
-  cursor: pointer;
-}
-.dropdownTool-menu {
-  display: none;
-  position: absolute;
-  left: 0px;
-  margin-top: 0;
-  background: rgba(255, 255, 255, 0.834);
-  border-radius: 6px;
-  z-index: 10;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  padding: 5px;
-  min-width: 160px;
-}
-.dropdownTool-menu .btnTool {
-  display: block;
-  width: 100%;
-  text-align: left;
-  margin: 2px 0;
-}
-/* Mostrar menu ao hover */
-.dropdownTool:hover .dropdownTool-menu {
-  display: block;
 }
