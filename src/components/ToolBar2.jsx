@@ -7,6 +7,7 @@ import { CgFormatStrike } from "react-icons/cg";
 import { PiEraserFill } from "react-icons/pi";
 import '../pages/lei.css'
 import { GoLaw } from 'react-icons/go';
+import { IoIosPeople } from 'react-icons/io';
 
 
 const ToolBar2 = ({bookRef, onToggleEditor, editorIsActive }) => {
@@ -19,8 +20,9 @@ const ToolBar2 = ({bookRef, onToggleEditor, editorIsActive }) => {
     <div className='toolbar2'>
       {/* ESTA TOOLBAR SÓ FUNCIONA PARA AÇÕES QUE ENVOLVEM APENAS O <p> HOVERED! */}
         <button className={`btnTool2 ${editorIsActive ? 'active' : ''}`} onClick={onToggleEditor} title='Exibir comentários'><BiCommentEdit /></button>
+        <button className='btnTool2' onClick={handleTest} title='Exibir comentários da comunidade'><IoIosPeople /></button>
         <button className='btnTool2' onClick={handleTest} title='Exibir jurisprudência'><GoLaw /></button>
-    </div>
+    </div> 
   )
 }
 

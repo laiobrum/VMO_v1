@@ -263,7 +263,9 @@
 .switch.on .ball {
   transform: translateX(24px);
 }
+/* --------------------------------- */
 /* TOOLBAR2 */
+/* --------------------------------- */
 .toolbar2 {
   display: flex;
   gap: 1px;

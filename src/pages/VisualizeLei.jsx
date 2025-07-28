@@ -193,7 +193,7 @@ const VisualizeLei = () => {
                     style={{
                         position: 'absolute',
                         top: hoveredP.getBoundingClientRect().top + window.scrollY - 5,
-                        left: hoveredP.getBoundingClientRect().left + window.scrollY - 35,
+                        left: hoveredP.getBoundingClientRect().left + window.scrollY - 38,
                         zIndex: 10,
                     }}
                     onMouseEnter={() => setIsToolbarHovered(true)}

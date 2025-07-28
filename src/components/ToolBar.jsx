@@ -20,8 +20,6 @@ import { ToggleSwitch } from './ToggleSwitch';
 const ToolBar = ({bookRef, user, leiId, onRestaurarTxtOriginal, modoOriginalAtivo, setModoOriginalAtivo}) => {
   const [alertMsg, setAlertMsg] = useState(null)
   
-  
-
   //HOOKS
   //Salva alterações ao apertar botão
   const {save, salvando} = useSaveUserAlterations( {bookRef, userId: user?.uid, leiId, onRestaurarTxtOriginal } )
@@ -255,10 +253,10 @@ const ToolBar = ({bookRef, user, leiId, onRestaurarTxtOriginal, modoOriginalAtiv
           </button>
           {/* Comentários */}
           <button 
-            className={`btnTool ${showComentarios ? 'btnToolClicked' : ''}`} onClick={()=>toggleTool('comentarios')} title='Exibir comentários'><BiSolidCommentEdit />
+            className={`btnTool ${showComentarios ? 'btnToolClicked' : ''}`} onClick={()=>toggleTool('comentarios')} title='Meus comentários'><BiSolidCommentEdit />
           </button>
           <button 
-            className='btnTool' title='Exibir comentários'><IoIosPeople />
+            className='btnTool' title='Comentários da comunidade'><IoIosPeople />
           </button>
           <button 
             className='btnTool' title='Exibir jurisprudência'><GoLaw />
@@ -280,6 +278,9 @@ const ToolBar = ({bookRef, user, leiId, onRestaurarTxtOriginal, modoOriginalAtiv
               <button className='btnTool' title='Exibir texto revogado' >tamanho txt</button>
               <button className='btnTool' title='Exibir texto revogado' >Refs cruzadas</button>
               <button className='btnTool' title='Exibir texto revogado' >Lazy load comments só da pág visível</button>
+              <button className='btnTool' title='Exibir texto revogado' >Quebrar comentários</button>
+              <button className='btnTool' title='Exibir texto revogado' >Editar comentários</button>
+              <button className='btnTool' title='Exibir texto revogado' >Comentários mt grandes quebram a view</button>
             </div>
           </div>
 
