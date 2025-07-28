@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { useFetchDocuments } from '../../hooks/useFetchDocuments'
+import { useFetchDocuments } from '../hooks/useFetchDocuments'
 
 const TodasLeis = () => {
     const { documents: leis, loading, error } = useFetchDocuments('leis')
@@ -13,13 +13,13 @@ const TodasLeis = () => {
             {error && <p>Ocorreu algum erro</p>}
         </div>
 
-        <ul>
+        <div className="leisContainer">
             {leis.map((lei) => (
-                <li key={lei.id}>
+                <p key={lei.id}>
                     <NavLink to={`/leis/${lei.id}`}>{lei.aTitle}</NavLink>
-                </li>
+                </p>
             ))}
-        </ul>
+        </div>
     </div>
   )
 }

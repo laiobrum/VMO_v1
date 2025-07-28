@@ -1,6 +1,6 @@
 p {
-  text-align: justify;
-  font-size: 1em;
+  /* text-align: justify; */
+  font-size: 1.1em;
   line-height: 1.6;
   margin: 0;
   padding: 4px;
@@ -10,33 +10,34 @@ p:hover {
   box-shadow: rgba(0, 0, 0, 0.077) 0px -1px 5px 0px; 
   background-color: var(--bgColor2);
 }
+ul {
+  margin: 0;
+}
 
 .titles {
   font-weight: bold;
-  font-size: 1.2em;
 }
-ul {
+/* Leis que são puxadas do BD */
+.leisContainer {
   margin: 0;
   padding: 0;
-  list-style-type: none;
-  text-decoration: none;
   gap: 30px;
 }
-ul a {
+.leisContainer a {
   text-decoration: none;
   color: var(--btnColor-1);
   font-weight: bold;
-}
-ul a:hover { 
+} 
+.leisContainer a:hover { 
   color: var(--btnColor-2);
 }
 .center {
-  margin-top: 1em;
-}
-.center p {
+  background-color: rgb(241, 241, 255);
   text-align: center;
   font-weight: bold;
+  border-radius: 0;
 }
+
 .book {
   max-width: 1200px;
   margin: 0 auto;
@@ -85,7 +86,7 @@ ul a:hover {
   font-size: x-small;
 }
 .leiRef {
-  color: rgb(0, 0, 192);
+  color: rgb(0, 0, 117);
   cursor: pointer;
 }
 .leiRef2 {

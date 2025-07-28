@@ -9,10 +9,12 @@ function Login() {
     const [password, setPassword] = useState('')
 
     const {login, signInWithGoogle, error: authError} = useAuthentication()
-    const handleSubmit = (e) =>{
+    const handleSubmit = async (e) =>{
       e.preventDefault()
-      login(email, password)
-      return
+      const user = await login(email, password)
+      if (user && user.emailVerified) {
+        window.location.reload()//Força o App.jsx recarregar o contexto
+      }
     }
 
     return (
@@ -20,19 +22,19 @@ function Login() {
         <div className="formContainer">
           <h2>Entre</h2>
             <form onSubmit={handleSubmit}>
-                <label className="formControl">
-                    <span htmlFor="email">Nome: </span>
+                <label htmlFor="email" className="formControl">
+                    <span>Nome: </span>
                     <input id="emailInput" type="text" name="email" placeholder="Digite seu email" onChange={(e)=>setEmail(e.target.value)} required />
                 </label>
-                <label className="formControl">
-                    <span htmlFor="name">Senha: </span>
-                    <input id="nameInput" type="password" name="name" placeholder="Digite seu nome" onChange={(e)=>setPassword(e.target.value)} required />
+                <label htmlFor="senha" className="formControl">
+                    <span>Senha: </span>
+                    <input id="senhaInput" type="password" name="password" placeholder="Digite seu nome" onChange={(e)=>setPassword(e.target.value)} required />
                     <div>
                       {authError && <p>Esqueceu sua senha? <Link to='/recoverPassword'>Clique Aqui</Link></p>}
                     </div>
                 </label>
 
-                <input className="standardBtn" type="submit" />
+                <input className="standardBtn" type="submit" value="Entrar" />
                 {authError ? <p className="errorMessage">{authError}</p> : ''}
             </form>
             <p>Cadastre-se: <Link to='/register'>Clique Aqui</Link></p>

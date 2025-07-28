@@ -27,12 +27,11 @@
 
 
 import { useState } from "react";
-import { db } from '../firebase/config'
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 import {AddIndultoTags, FixIndultoTags} from '../utils/Leis em HTML/Indulto/IndultoTags'
 import { addCFTags, fixCFTags } from "../utils/Leis em HTML/CF/CFtags";
 import { useSaveLeiOriginal } from "../hooks/useSaveLeiOriginal";
+import { NavLink } from "react-router-dom";
 
 function InserirLeis() {
     const [title, setTitle] = useState('')
@@ -67,8 +66,8 @@ function InserirLeis() {
             .replace(/<p[^>]*>/gi, '<p>')
 
             // //Tags
-            .replace(/<(font|span|u|sup|i|small|table|b|td|tbody|strong|tr|blockquote)[^>]*>/gi, '')//Remove todas as tags inúteis
-            .replace(/<\/(font|span|u|sup|i|small|table|b|td|tbody|strong|tr|blockquote)>/gi, '')//Remove fechamento das tags inúteis
+            .replace(/<(font|span|u|sup|i|em|small|table|b|td|div|body|tbody|strong|tr|blockquote)[^>]*>/gi, '')//Remove todas as tags inúteis
+            .replace(/<\/(font|span|u|sup|i|em|small|table|b|td|div|body|tbody|strong|tr|blockquote)>/gi, '')//Remove fechamento das tags inúteis
 
             // Move name="..." da <a> para id="..." do <p>
             .replace(/<p([^>]*)>\s*<a name="([^"]+)"[^>]*><\/a>([\s\S]*?)<\/p>/gi, '<p id="$2"$1>$3</p>')
@@ -104,6 +103,11 @@ function InserirLeis() {
 
         //§§
         .replace(/(§ \d+)º/g, "$1.º")//arrumar o § 1.º
+        .replace(/§\s*(\d+)o\b/g, '§ $1.º') //arruma § 2o para § 2.º
+        .replace(/^§\s*(\d+)\s*-\s*/gm, "§ $1. ")//Arruma os § 10 - para § 10.
+
+        // &#150; - isso é um hífen de forma diferente
+        .replace(/&#150;/g, '-')
 
         //Envolver "Art. Xº" no início do parágrafo com <span class="titles">
         .replace(/(<p[^>]*>)\s*(Art\.\s*\d+º)/gi, '$1<span class="titles">$2</span>')
@@ -126,6 +130,20 @@ function InserirLeis() {
         .replace(/<span>\(/gi, '<span class="leiRef2">(')
         .replace(/<span>/gi, '<span class="leiRef">')
 
+
+        setTexto(textoLimpo)
+        return 
+    }
+
+    const createIds = (e) => {
+        e.preventDefault()
+        let contador = 1;
+        const textoLimpo = texto
+
+        .replace(/<p(?![^>]*id=)([^>]*)>/gi, (_, otherAttrs) => {
+        const id = `p${contador++}`
+        return `<p id="${id}"${otherAttrs}>`
+        })
 
         setTexto(textoLimpo)
         return 
@@ -164,21 +182,21 @@ function InserirLeis() {
 
                 {/* Tag TEXTAREA - é igual */}
                 <label className="formControl">
-                    <span>Texto da lei: </span>
+                    <span>Texto da lei modificado: </span>
                     <textarea type="textarea" name="texto" placeholder="Insira todo o texto legal" onChange={(e)=>setTexto(e.target.value)} value={texto} ></textarea>
                 </label>
                 
                 <div className="btnContainer">
                     <button onClick={fixOriginalTags} className="btn2">Editar tags originais</button>&nbsp;➤&nbsp;
                     <button onClick={addMyTags} className="btn2">Adicionar HTML</button>&nbsp;➤&nbsp;
+                    <button onClick={createIds} className="btn2">Criar IDs que faltam</button>&nbsp;➤&nbsp;
                     <button className="btn2">Gerar links</button>&nbsp;➤&nbsp;
                     <button onClick={visualize} className="btn2">Pré-visualizar</button>&nbsp;➤&nbsp;
                     <input className="btn1" type="submit" value={salvando ? "Salvando lei original..." : "Salvar Lei"} />&nbsp;&nbsp;
 
                     <br />
                     <br />
-                    <button className="btn2">Editar p/ referência cruzada</button>&nbsp;➤&nbsp;
-                    <input className="btn1" type="submit" value="Salvar p/ referência cruzada" />
+                    <NavLink to='/insertlaws/comparar' target="_blank" rel="noopener noreferrer" className="a2 ">Comparar Leis</NavLink>&nbsp;
                 </div>
             </form>
         </div>

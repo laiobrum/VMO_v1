@@ -6,21 +6,23 @@ import { MdFormatUnderlined } from "react-icons/md";
 import { CgFormatStrike } from "react-icons/cg";
 import { PiEraserFill } from "react-icons/pi";
 import '../pages/lei.css'
+import { GoLaw } from 'react-icons/go';
+import { IoIosPeople } from 'react-icons/io';
 
 
-const ToolBar2 = ({bookRef}) => {
+const ToolBar2 = ({bookRef, onToggleEditor, editorIsActive }) => {
 
   const handleTest = () => {
     console.log(bookRef)
   }
 
-
   return (
     <div className='toolbar2'>
       {/* ESTA TOOLBAR SÓ FUNCIONA PARA AÇÕES QUE ENVOLVEM APENAS O <p> HOVERED! */}
-        <button onClick={handleTest}><BiCommentEdit /></button>
-        <button><CgFormatStrike /></button>
-    </div>
+        <button className={`btnTool2 ${editorIsActive ? 'active' : ''}`} onClick={onToggleEditor} title='Exibir comentários'><BiCommentEdit /></button>
+        <button className='btnTool2' onClick={handleTest} title='Exibir comentários da comunidade'><IoIosPeople /></button>
+        <button className='btnTool2' onClick={handleTest} title='Exibir jurisprudência'><GoLaw /></button>
+    </div> 
   )
 }
 

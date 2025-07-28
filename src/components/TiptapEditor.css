@@ -1,0 +1,82 @@
+.ProseMirror {
+  outline: none;
+}
+.editor-container {
+  
+  background-color: rgba(228, 228, 228, 0.463);
+  margin-bottom: 6px;
+  padding: 4px;
+  border-radius: 8px;
+}
+.cmt-user {
+  font-family: 'Roboto', 'Segoe UI', sans-serif;
+  font-size: 0.85em;
+  color: #414141;
+  margin-bottom: 5px;
+  margin-left: 1px;
+  border-left: 3px solid #2d6cdf;
+  background-color: #2d6bdf0f;
+  border-radius: 4px;
+}
+.txtBoxContainer {
+  border: 1px rgba(0, 0, 0, 0.215) solid;
+  border-radius: 5px;
+  background: linear-gradient(to bottom, #fff, #f5f5f5);
+  margin-bottom: 5px;
+}
+.btnTxtContainer {
+  gap: 10px;
+  display: flex;
+  justify-content: end;
+  
+}
+.btnTxt {
+  background-color: var(--btnColor-1);
+  border: 1px solid transparent;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 0.4em 1em;
+}
+.btnTxt:hover {
+  background-color: var(--btnColor-2);
+}
+.editor-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.editorBtn {
+  background: linear-gradient(to bottom, #f6f6f6, #dadada);
+  border: none;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* COLOR PICKER */
+.color-picker-wrapper {
+  position: relative;
+}
+.colorBtn {
+  color: blue;
+  background: linear-gradient(180deg, white, #ff00004e);
+  border: none;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+
+}
+.color-picker-popover {
+  position: absolute;
+  background: linear-gradient(to bottom, #fff, #ededed);
+  top: 120%; /* ajustável */
+  right: 0px;
+  z-index: 1000;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.308);
+  padding: 5px;
+  border-radius: 8px;
+}
+
