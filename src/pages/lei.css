@@ -85,21 +85,35 @@ ul {
 .encerramento {
   font-size: x-small;
 }
-.leiRef {
+.leiRef {/* leiRef - referência de arts */
   color: rgb(0, 0, 117);
   cursor: pointer;
 }
-.leiRef2 {
+.leiRef2 {/* leiRef2 - Redação dada, Incluído pelo...etc */
   color: grey;
+  font-weight:normal;
 }
 .leiRef2:hover {
   color: inherit;
+}
+.leiRef3 {/* leiRef3 - msm do 2 mas no título  */
+  font-weight: lighter;
+  color: grey;
+  display: block;
+}
+.leiRef4 {/* leiRef4 - Vide lei tal */
+  color: grey;
+  font-weight:normal;
 }
 .revogado {
   display: none;
 }
 .aparecer { /* aparecer tem que ficar após revogado!!! */
   display: block;
+}
+.tipoPenal {
+  font-weight: bolder;
+  padding-bottom: 0;
 }
 
 

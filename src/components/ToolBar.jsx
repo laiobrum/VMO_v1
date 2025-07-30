@@ -275,12 +275,20 @@ const ToolBar = ({bookRef, user, leiId, onRestaurarTxtOriginal, modoOriginalAtiv
               <button 
                 className={`btnSwitch ${modoOriginalAtivo ? 'btnSwitchClicked' : ''}`} title='Exibir lei original' onClick={restaurarTextoOriginal} disabled={loadingOriginal}><ToggleSwitch isOn={modoOriginalAtivo} handleToggle={restaurarTextoOriginal} />Texto original
               </button>
+              <button className='btnTool' title='Exibir texto revogado' >Recalcular página para revogados</button>
+              <button className='btnTool' title='Exibir texto revogado' >Reportar erro</button>
               <button className='btnTool' title='Exibir texto revogado' >tamanho txt</button>
+              <button className='btnTool' title='Exibir texto revogado' >Teclas de atalho</button>
               <button className='btnTool' title='Exibir texto revogado' >Refs cruzadas</button>
               <button className='btnTool' title='Exibir texto revogado' >Lazy load comments só da pág visível</button>
               <button className='btnTool' title='Exibir texto revogado' >Quebrar comentários</button>
               <button className='btnTool' title='Exibir texto revogado' >Editar comentários</button>
               <button className='btnTool' title='Exibir texto revogado' >Comentários mt grandes quebram a view</button>
+              <button className='btnTool' title='Exibir texto revogado' >SEO optimization</button>
+              <button className='btnTool' title='Exibir texto revogado' >Entender como monitorar e melhorar performance</button>
+              <button className='btnTool' title='Exibir texto revogado' >Marca-página ou menu de títulos?</button>
+              <button className='btnTool' title='Exibir texto revogado' >Edição de conteúdo oficial (p/ v2)</button>
+              
             </div>
           </div>
 

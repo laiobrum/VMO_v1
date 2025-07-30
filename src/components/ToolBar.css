@@ -289,7 +289,9 @@
   background-color: #4850ef;
   color: white;
 }
+/* --------------------------------- */
 /* LAWSIDEBAR */
+/* --------------------------------- */
 .lawSideBar {
   padding-left: 10px;
   position: fixed;
@@ -330,3 +332,38 @@
   transform: scale(1.3);
   background-color: #c3c6f5;
 }
+/* --------------------------------- */
+/* Modal - Reportar erro (mas pode usar para outras coisas) */
+/* --------------------------------- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+}
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+.modaltxt {
+  width: 600px;
+  height: 200px;
+}
+.editedDisp {
+  background-color: #ff000045;
+}
+

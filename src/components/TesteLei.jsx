@@ -5,7 +5,7 @@ const TesteLei = () => {
   const [textoCompleto, setTextoCompleto] = useState('');
   const bookRef = useRef(null);
 
-  //Pega dados do storage temporário e coloca no estado
+  // Pega dados do storage temporário e coloca no estado
   useEffect(() => {
     const texto = localStorage.getItem('texto-temporário') || '';
     setTextoCompleto(texto);
@@ -15,14 +15,17 @@ const TesteLei = () => {
     if (!textoCompleto) return;
 
     const book = bookRef.current;
+    if (!book) return;
     book.innerHTML = '';
 
     const tempContainer = document.createElement('div');
     tempContainer.innerHTML = textoCompleto;
-    const nodes = Array.from(tempContainer.childNodes);
+
+    // Pegamos apenas <p>, <div>, etc. — evitando TextNodes soltos
+    const nodes = Array.from(tempContainer.querySelectorAll('p, div, section, article'));
 
     const columnsPerPage = 3;
-    const maxLinesPerColumn = 30;  // Limite de linhas por coluna
+    const maxLinesPerColumn = 30;
     let currentNodeIndex = 0;
 
     function createPage() {
@@ -41,16 +44,22 @@ const TesteLei = () => {
       let index = startIndex;
 
       while (index < nodes.length) {
-        const node = nodes[index].cloneNode(true);
-        column.appendChild(node);
+        const node = nodes[index];
+        if (!node || node.nodeType !== 1) {
+          index++;
+          continue;
+        }
+
+        const cloned = node.cloneNode(true);
+        column.appendChild(cloned);
 
         const totalHeight = column.clientHeight;
-        const computedLineHeight = parseFloat(getComputedStyle(column).lineHeight);
+        const computedLineHeight = parseFloat(getComputedStyle(column).lineHeight || '20');
         const numberOfLines = Math.floor(totalHeight / computedLineHeight);
 
         if (numberOfLines >= maxLinesPerColumn) {
-          column.removeChild(node);  // Remove o último que estourou
-          return index;  // Continua desse index na próxima coluna
+          column.removeChild(cloned);
+          return index;
         }
 
         index++;
@@ -69,12 +78,15 @@ const TesteLei = () => {
       }
     }
 
-    fillPages();
+    // Deixa a renderização mais suave para textos longos
+    setTimeout(() => {
+      fillPages();
+    }, 0);
   }, [textoCompleto]);
 
   return (
     <div className="law_container">
-      <div className='book' id='book' ref={bookRef}></div>
+      <div className="book" id="book" ref={bookRef}></div>
     </div>
   );
 };

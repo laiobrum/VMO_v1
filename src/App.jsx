@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes, Outlet } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, Outlet, useParams } from "react-router-dom";
 import Navbar from "./components/layouts/Navbar";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -6,7 +6,7 @@ import Register from "./pages/Register";
 import { AuthProvider } from "./context/AuthContext";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "./firebase/config";
+import { auth} from "./firebase/config";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
 import Recover from "./pages/Recover";
@@ -66,7 +66,7 @@ function App() {
             <Route path="/recoverPassword" element={<Recover />} />
             
             <Route path="/leis" element={<TodasLeis />} />
-            <Route path="/leis/:leiId" element={<VisualizeLei />} />
+            <Route path="/leis/:slug" element={<VisualizeLei />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>

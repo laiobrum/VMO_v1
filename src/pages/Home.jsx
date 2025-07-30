@@ -18,7 +18,7 @@ const Home = () => {
           {loading && <li>Carregando...</li>}
             {leis.map((lei) => (
                 <p key={lei.id}>
-                    <NavLink to={`/leis/${lei.id}`}>{lei.aTitle}</NavLink>
+                    <NavLink to={`/leis/${lei.apelido}`}>{lei.aTitle}</NavLink>
                 </p>
             ))}
         </div>

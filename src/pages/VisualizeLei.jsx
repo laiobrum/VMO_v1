@@ -1,3 +1,4 @@
+import { useLeiIdAndSlug } from "../hooks/useLeiIdAndSlug"
 import { useEffect, useRef, useState } from "react"
 import { NavLink, useParams } from "react-router-dom"
 import './lei.css'
@@ -10,10 +11,10 @@ import BotaoComparar from "../components/BotaoComparar"
 import { createRoot } from "react-dom/client"
 import TiptapEditor from "../components/TiptapEditor"
 
+
 const VisualizeLei = () => {
-    const { leiId } = useParams()
-    const {user} = useAuthValue()
     const bookRef = useRef(null)
+    const {user} = useAuthValue()
 
     const [hoveredP, setHoveredP] = useState(null)
     const [editorBelowP, setEditorBelowP] = useState(null)
@@ -23,10 +24,13 @@ const VisualizeLei = () => {
     const [textoOriginal, setTextoOriginal] = useState([])
     
     //HOOKS:
+    //CRIAÇÃO DE SLUG - apelido para URL - melhora SEO - retorna tanto o leiId como o slug
+    const { leiId, slugResolvido } = useLeiIdAndSlug()//tem que estar antes, pq o useMergedLaw usa leiId
     //Fetch dos dados - pega a lei alterada pelo usuário, se não tiver, pega a lei original - coloca no estado "Lei"
     const { mergedDisps, loading, error } = useMergedLaw({ userId: user?.uid, leiId })
     //Hook da lawSideBar - tem que atualizar, visto que mudou a estrutura de dados
     const {documents: leis} = useFetchDocuments('leis')
+    
 
     useEffect(() => {
         const book = bookRef.current
@@ -112,6 +116,25 @@ const VisualizeLei = () => {
                 }
             }
         }
+
+        // Após a edição de algum texto de lei, este código vai rolar automaticamente até ele!
+        const scrollToId = localStorage.getItem('scrollToId')
+        if (scrollToId) {
+            setTimeout(() => {
+                const target = document.getElementById(scrollToId)
+                if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'center' })
+
+                //Pisca vermelho onde mudou
+                target.classList.add('editedDisp')
+                setTimeout(()=>{
+                    target.classList.remove('editedDisp')
+                }, 2000)
+
+                localStorage.removeItem('scrollToId')
+                }
+            }, 100) // espera um pouco para o DOM estar pronto
+        }
         
         function handleMouseOver(e) {
         const el = e.target
@@ -147,6 +170,8 @@ const VisualizeLei = () => {
 
     }, [mergedDisps, textoOriginal])//Não colocar isToolbarHovered, pq sempre quando hover, ele restarta o useEffect e tira as marcações! Nem o activeEditorP, pq ele estraga tudo!
 
+    if (!slugResolvido) return <p>Carregando lei...</p>;
+    if (!leiId) return <p>Lei não encontrada.</p>;
     if (loading) return <p>Carregando...</p>
     if (error) return <p>Ocorreu algum erro</p>
 
@@ -159,7 +184,7 @@ const VisualizeLei = () => {
                 {/* BARRA DE LEIS */}
                 <div className="lawSideBar">
                     {leis.map((lei)=>(
-                        <NavLink key={lei.id} className="lawItem" to={`/leis/${lei.id}`}><div>{lei.aTitle}</div></NavLink>
+                        <NavLink key={lei.id} className="lawItem" to={`/leis/${lei.apelido}`}><div>{lei.aTitle}</div></NavLink>
                     ))}
                 </div>
             </div>
@@ -204,6 +229,7 @@ const VisualizeLei = () => {
                 >
                     <ToolBar2
                         bookRef={bookRef}
+                        hoveredP={hoveredP}
                         editorIsActive={hoveredP && activeEditorP === hoveredP}
                         onToggleEditor={() => {
                             if (!hoveredP) return
