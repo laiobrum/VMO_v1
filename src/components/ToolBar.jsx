@@ -300,6 +300,8 @@ const ToolBar = ({bookRef, user, leiId, onRestaurarTxtOriginal, modoOriginalAtiv
 
               <button className='btnTool' title='' >LANÇAMENTO VERSÃO BETA:</button>
               <button className='btnTool' title='' >Refs cruzadas</button>
+              <button className='btnTool' title='' >Botões hover deslocados estão ATRAPALHANDO MUITO!</button>
+              <button className='btnTool' title='' >No art. 109, CP, mesmo com texto original, me mostrou o texto alterado</button>
               <button className='btnTool' title='' >Editar comentários</button>
               <button className='btnTool' title='' >"Ver mais..." nos comentários</button>
               <button className='btnTool' title='' >Comentários mt grandes quebram a view</button>
