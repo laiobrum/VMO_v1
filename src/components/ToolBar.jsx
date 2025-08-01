@@ -8,7 +8,7 @@ import { GoLaw } from "react-icons/go";
 import '../pages/lei.css'
 import { ImBold } from 'react-icons/im';
 import { IoIosPeople, IoMdSave } from "react-icons/io";
-import { MdFormatUnderlined } from 'react-icons/md';
+import { MdFormatUnderlined, MdOutlineReport } from 'react-icons/md';
 import { IoSettingsOutline } from "react-icons/io5";
 import './ToolBar.css'
 import AlertMessage from './AlertMessage';
@@ -16,9 +16,11 @@ import { useToggleTool } from '../hooks/useToggleTool';
 import { useSaveUserAlterations } from '../hooks/useSaveUserAlterations';
 import { useFetchOriginalLei } from '../hooks/useFetchOriginalLei';
 import { ToggleSwitch } from './ToggleSwitch';
+import { TiWarningOutline } from 'react-icons/ti';
 
 const ToolBar = ({bookRef, user, leiId, onRestaurarTxtOriginal, modoOriginalAtivo, setModoOriginalAtivo}) => {
   const [alertMsg, setAlertMsg] = useState(null)
+  const [fontSize, setFontSize] = useState(14) 
   
   //HOOKS
   //Salva alterações ao apertar botão
@@ -224,6 +226,18 @@ const ToolBar = ({bookRef, user, leiId, onRestaurarTxtOriginal, modoOriginalAtiv
     }
   }
 
+  //BOTÃO DE ALTERAR TAMANHO DO TEXTO
+  useEffect(() => {
+    if (!bookRef?.current) return;
+
+    // Aplica o fontSize em cada coluna renderizada
+    const columns = bookRef.current.querySelectorAll('.column')
+    columns.forEach(col => {
+      col.style.fontSize = `${fontSize}px`
+    })
+
+  }, [fontSize, bookRef])
+
   return (
     <>
     <div className='toolbar'>
@@ -273,21 +287,35 @@ const ToolBar = ({bookRef, user, leiId, onRestaurarTxtOriginal, modoOriginalAtiv
             <button className="btnTool dropdownTool-toggle" title="Outras ferramentas"><IoSettingsOutline /></button>
             <div className='dropdownTool-menu'>
               <button 
-                className={`btnSwitch ${modoOriginalAtivo ? 'btnSwitchClicked' : ''}`} title='Exibir lei original' onClick={restaurarTextoOriginal} disabled={loadingOriginal}><ToggleSwitch isOn={modoOriginalAtivo} handleToggle={restaurarTextoOriginal} />Texto original
+                className={`btnSwitch ${modoOriginalAtivo ? 'btnSwitchClicked' : ''}`} title='Reportar erro' onClick={restaurarTextoOriginal} disabled={loadingOriginal}><ToggleSwitch isOn={modoOriginalAtivo} handleToggle={restaurarTextoOriginal} />Texto original
               </button>
-              <button className='btnTool' title='Exibir texto revogado' >Recalcular página para revogados</button>
-              <button className='btnTool' title='Exibir texto revogado' >Reportar erro</button>
-              <button className='btnTool' title='Exibir texto revogado' >tamanho txt</button>
-              <button className='btnTool' title='Exibir texto revogado' >Teclas de atalho</button>
-              <button className='btnTool' title='Exibir texto revogado' >Refs cruzadas</button>
-              <button className='btnTool' title='Exibir texto revogado' >Lazy load comments só da pág visível</button>
-              <button className='btnTool' title='Exibir texto revogado' >Quebrar comentários</button>
-              <button className='btnTool' title='Exibir texto revogado' >Editar comentários</button>
-              <button className='btnTool' title='Exibir texto revogado' >Comentários mt grandes quebram a view</button>
-              <button className='btnTool' title='Exibir texto revogado' >SEO optimization</button>
-              <button className='btnTool' title='Exibir texto revogado' >Entender como monitorar e melhorar performance</button>
-              <button className='btnTool' title='Exibir texto revogado' >Marca-página ou menu de títulos?</button>
-              <button className='btnTool' title='Exibir texto revogado' >Edição de conteúdo oficial (p/ v2)</button>
+
+              <button className='btnTool' title='Exibir texto revogado' onClick={()=>setAlertMsg('Reporte o erro clicando no botão ⚠︎ que aparece ao passar o mouse no texto da lei')} ><TiWarningOutline /> Reportar erro</button>
+
+                <div className='letrasize'>
+                  <button className='btnTool' onClick={() => setFontSize(prev => Math.max(prev - 1, 12))} title="Diminuir texto">A-</button>
+                  <span style={{ fontSize: '0.9em' }}>{fontSize}px</span>
+                  <button className='btnTool' onClick={() => setFontSize(prev => Math.min(prev + 1, 28))} title="Aumentar texto">A+</button>
+                </div>
+
+              <button className='btnTool' title='' >LANÇAMENTO VERSÃO BETA:</button>
+              <button className='btnTool' title='' >Refs cruzadas</button>
+              <button className='btnTool' title='' >Editar comentários</button>
+              <button className='btnTool' title='' >"Ver mais..." nos comentários</button>
+              <button className='btnTool' title='' >Comentários mt grandes quebram a view</button>
+              <button className='btnTool' title='' >Autosave a cada 30s</button>
+              <button className='btnTool' title='' >SEO optimization - Next.JS???</button>
+              <button className='btnTool' title='' >Colocar leis principais</button>
+              <button className='btnTool' title='' >---------------------------</button>
+              <button className='btnTool' title='' >MELHORAMENTOS POSTERIORES:</button>
+              <button className='btnTool' title='' >Teclas de atalho</button>
+              <button className='btnTool' title='' >Inserir conteúdo do Vade Mecum Saraiva</button>
+              <button className='btnTool' title='' >Recalcular página para revogados ???</button>
+              <button className='btnTool' title='' >Lazy load comments só da pág visível</button>
+              <button className='btnTool' title='' >Quebrar comentários em colunas ???</button>
+              <button className='btnTool' title='' >Entender como monitorar e melhorar performance</button>
+              <button className='btnTool' title='' >Marca-página ou menu de títulos?</button>
+              
               
             </div>
           </div>

@@ -22,6 +22,12 @@ export const useSaveUserAlterations = ({ bookRef, userId, leiId }) => {
     try {
       setSalvando(true)
 
+      // Cria campo criado em no leiId, para não dar ruim depois na consulta das leis alteradas
+      const leiDocRef = doc(db, "users", userId, "alteracoesUsuario", leiId)
+      await setDoc(leiDocRef, {
+        criadoEm: new Date()
+      }, { merge: true })
+
       const alteredElements = Array.from(bookRef.current.querySelectorAll(".alterado"))
 
       for (const el of alteredElements) {

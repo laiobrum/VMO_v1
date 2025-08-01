@@ -52,6 +52,10 @@
   cursor: pointer;
   transition: border-color 0.25s;
 }
+.btnTool > svg {
+  position: relative;
+  top: 2px;
+}
 .btnTool:hover {
   background-color: var(--btnColor-2);
   color: white;
@@ -263,6 +267,14 @@
 .switch.on .ball {
   transform: translateX(24px);
 }
+/* Aumentar e diminuir letra */
+.letrasize {
+  width: 50px;
+  display: flex;
+  gap: '5px';
+  align-items: center;
+}
+
 /* --------------------------------- */
 /* TOOLBAR2 */
 /* --------------------------------- */
@@ -352,7 +364,7 @@
   padding: 2rem;
   border-radius: 8px;
   width: 90%;
-  max-width: 600px;
+  max-width: 700px;
 }
 .modal-buttons {
   display: flex;
@@ -365,5 +377,15 @@
 }
 .editedDisp {
   background-color: #ff000045;
+}
+/* --------------------------------- */
+/* Caixa de referência de lei */
+/* --------------------------------- */
+.tooltip-referencia {
+  max-width: 400px;
+  font-size: 0.95rem;
+}
+.tooltip-referencia p {
+  margin: 0 0 8px 0;
 }
 

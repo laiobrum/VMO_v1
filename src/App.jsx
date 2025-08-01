@@ -17,6 +17,8 @@ import TesteLei from "./components/TesteLei";
 import TodasLeis from "./pages/TodasLeis";
 import VisualizeLei from "./pages/VisualizeLei";
 import CompararLeis from "./components/CompararLeis";
+import LeisUsuario from "./pages/LeisUsuario";
+
 
 function App() {
   const [user, setUser] = useState(undefined);
@@ -64,6 +66,8 @@ function App() {
             <Route path="/register" element={!emailVerifiedUser ? <Register /> : <Navigate to="/" />} />
             <Route path="/profile" element={emailVerifiedUser ? <Profile /> : <Navigate to="/login" />} />
             <Route path="/recoverPassword" element={<Recover />} />
+
+            <Route path="/leis-usuario" element={emailVerifiedUser ? <LeisUsuario /> : <Navigate to="/login" />}/>
             
             <Route path="/leis" element={<TodasLeis />} />
             <Route path="/leis/:slug" element={<VisualizeLei />} />

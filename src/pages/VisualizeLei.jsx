@@ -1,6 +1,6 @@
 import { useLeiIdAndSlug } from "../hooks/useLeiIdAndSlug"
 import { useEffect, useRef, useState } from "react"
-import { NavLink, useParams } from "react-router-dom"
+import { NavLink } from "react-router-dom"
 import './lei.css'
 import ToolBar2 from "../components/ToolBar2"
 import { useAuthValue } from "../context/AuthContext"
@@ -10,6 +10,7 @@ import { useMergedLaw } from "../hooks/useMergedLaw"
 import BotaoComparar from "../components/BotaoComparar"
 import { createRoot } from "react-dom/client"
 import TiptapEditor from "../components/TiptapEditor"
+import CaixaReferenciada from "../components/CaixaReferenciada"
 
 
 const VisualizeLei = () => {
@@ -22,6 +23,7 @@ const VisualizeLei = () => {
     const [isToolbarHovered, setIsToolbarHovered] = useState(false)
     const [modoOriginalAtivo, setModoOriginalAtivo] = useState(false)
     const [textoOriginal, setTextoOriginal] = useState([])
+    const [refData, setRefData] = useState(null)
     
     //HOOKS:
     //CRIAÇÃO DE SLUG - apelido para URL - melhora SEO - retorna tanto o leiId como o slug
@@ -170,6 +172,31 @@ const VisualizeLei = () => {
 
     }, [mergedDisps, textoOriginal])//Não colocar isToolbarHovered, pq sempre quando hover, ele restarta o useEffect e tira as marcações! Nem o activeEditorP, pq ele estraga tudo!
 
+    //-------------------------------------------------
+    //------CAIXA DE REFERÊNCIA DE LEI CRUZADA--------
+    //-------------------------------------------------
+    useEffect(() => {
+        const handleClick = (e) => {
+        const span = e.target.closest('.leiRef')
+        if (span) {
+            const codigoLei = span.getAttribute('data-lei')
+            const rect = span.getBoundingClientRect()
+            const scrollTop = window.scrollY || document.documentElement.scrollTop
+            const scrollLeft = window.scrollX || document.documentElement.scrollLeft
+
+            setRefData({
+            codigoLei,
+            pos: { top: rect.bottom + scrollTop + 8, left: rect.left + scrollLeft }
+            })
+        } else {
+            setRefData(null)// Clicar fora fecha a caixa
+        }
+        }
+
+        document.addEventListener('click', handleClick)
+        return () => document.removeEventListener('click', handleClick)
+    }, [])
+
     if (!slugResolvido) return <p>Carregando lei...</p>;
     if (!leiId) return <p>Lei não encontrada.</p>;
     if (loading) return <p>Carregando...</p>
@@ -178,8 +205,10 @@ const VisualizeLei = () => {
     return (
         <>
         <div className="law_container">
-            {/* TOOLBAR e botão COMPARAR fixos */}
+
+            {/* TOOLBAR e LAWSIDEBAR */}
             <div className="toolContainer">
+                {/* BARRA DE FERRAMENTAS */}
                 <ToolBar bookRef={bookRef} user={user} leiId={leiId} onRestaurarTxtOriginal={setTextoOriginal} modoOriginalAtivo={modoOriginalAtivo} setModoOriginalAtivo={setModoOriginalAtivo} />
                 {/* BARRA DE LEIS */}
                 <div className="lawSideBar">
@@ -191,6 +220,15 @@ const VisualizeLei = () => {
             
             {/* CONTAINER em que a lei vai ser carregada */}
             <div className='book' id='book' ref={bookRef}></div>
+
+            {/* CAIXA DE REFERÊNCIA */}
+            {refData && (
+                <CaixaReferenciada 
+                codigoLei={refData.codigoLei}
+                pos={refData.pos}
+                onClose={() => setRefData(null)}
+                />
+            )}
 
             {/* TIPTAP EDITOR */}
             {editorBelowP && (

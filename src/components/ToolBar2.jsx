@@ -5,14 +5,17 @@ import { ImBold } from "react-icons/im";
 import { MdFormatUnderlined } from "react-icons/md";
 import { CgFormatStrike } from "react-icons/cg";
 import { PiEraserFill } from "react-icons/pi";
+import { TiWarningOutline } from "react-icons/ti";
 import '../pages/lei.css'
 import { GoLaw } from 'react-icons/go';
 import { IoIosPeople } from 'react-icons/io';
 import { MdOutlineReport } from "react-icons/md";
 import ReportarErro from './ReportarErro';
+import { useAuthValue } from '../context/AuthContext';
 
 
 const ToolBar2 = ({bookRef, hoveredP, onToggleEditor, editorIsActive }) => {
+  const {user} = useAuthValue()
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const handleOpen = () => setIsModalOpen(true)
@@ -37,8 +40,13 @@ const ToolBar2 = ({bookRef, hoveredP, onToggleEditor, editorIsActive }) => {
         <button className={`btnTool2 ${editorIsActive ? 'active' : ''}`} onClick={onToggleEditor} title='Exibir comentários'><BiCommentEdit /></button>
         <button className='btnTool2' onClick={handleTest} title='Exibir comentários da comunidade'><IoIosPeople /></button>
         <button className='btnTool2' onClick={handleTest} title='Exibir jurisprudência'><GoLaw /></button>
-        <button className='btnTool2' onClick={handleOpen} title='Reportar erro'><MdOutlineReport /></button>
-        <ReportarErro hoveredP={hoveredP} isOpen={isModalOpen} onClose={handleClose} onSubmit={handleSubmit} />
+        {user && (
+          <>
+          <button className='btnTool2' onClick={handleOpen} title='Reportar erro'><TiWarningOutline /></button>
+          <ReportarErro hoveredP={hoveredP} isOpen={isModalOpen} onClose={handleClose} onSubmit={handleSubmit} />
+          </>
+        )}
+        
     </div> 
   )
 }

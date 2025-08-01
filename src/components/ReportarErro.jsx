@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useAdminAccess } from "../hooks/useAdminAccess";
 import { useAuthValue } from "../context/AuthContext";
 import { useSaveDispositivo } from "../hooks/useSaveDispositivo";
+import { inserirReferenciasNoHTML } from "../utils/inserirReferenciasNoHTML";
 
 
 const ReportarErro = ({isOpen, onClose, onSubmit, hoveredP}) => {
@@ -9,11 +10,11 @@ const ReportarErro = ({isOpen, onClose, onSubmit, hoveredP}) => {
     const {isAdmin} = useAdminAccess(user)
     const [correcao, setCorrecao] = useState(""); // usado por admins
     const [explicacao, setExplicacao] = useState(""); // usado por usuários
-    const [email, setEmail] = useState(user.email)
+    const [email, setEmail] = useState(user.email || '')
 
     const {salvarDispositivo, salvando} = useSaveDispositivo(hoveredP)
 
-    // Atualiza o textarea com o conteúdo do parágrafo quando o modal abrir
+    // Preenche o textarea com o conteúdo do parágrafo quando o modal abrir
     useEffect(() => {
         if(isOpen && hoveredP) {
             setCorrecao(hoveredP.outerHTML || "")
@@ -65,6 +66,13 @@ const ReportarErro = ({isOpen, onClose, onSubmit, hoveredP}) => {
         localStorage.setItem('texto-temporário', correcao)
         window.open('/teste-nova-lei', '_blank')
     }
+
+    //Inserir referência cruzada
+    const inserirRef = (e) => {
+      e.preventDefault()
+      const novoHtml = inserirReferenciasNoHTML(correcao)
+      setCorrecao(novoHtml)
+    }
     
 
   return (
@@ -96,9 +104,7 @@ const ReportarErro = ({isOpen, onClose, onSubmit, hoveredP}) => {
               />
             </label>
             <div className="modal-buttons">
-              <button className="btn1" type="button" onClick={onClose}>
-                Fechar
-              </button>
+              <button className="btn1" type="button" onClick={onClose}>Fechar</button>
               <input className="btn1" type="submit" value="Enviar" />
             </div>
           </form>
@@ -116,14 +122,10 @@ const ReportarErro = ({isOpen, onClose, onSubmit, hoveredP}) => {
               />
             </label>
             <div className="modal-buttons">
-              <button className="btn1" type="button" onClick={onClose}>
-                Fechar
-              </button>
+              <button className="btn1" type="button" onClick={onClose}>Fechar</button>
               <button onClick={visualize} className="btn2">Pré-visualizar</button>
-              <input
-                className="btn1"
-                type="submit"
-                value={salvando ? "Editando... aguarde" : "Editar na base de dados"}
+              <button onClick={inserirRef} className="btn2">Inserir Referência</button>
+              <input className="btn1" type="submit" value={salvando ? "Editando... aguarde" : "Editar na base de dados"}
               />
             </div>
           </form>

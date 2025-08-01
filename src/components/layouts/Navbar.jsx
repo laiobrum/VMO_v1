@@ -5,11 +5,13 @@ import { useAuthentication } from '../../hooks/useAuthentication'
 import { BsPersonFill } from "react-icons/bs";
 import { MdOutlineArrowDropDown } from 'react-icons/md'
 import { useEffect, useRef, useState } from 'react'
+import { useAdminAccess } from '../../hooks/useAdminAccess';
 
 const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef(null)
   const {user} = useAuthValue()
+  const {isAdmin} = useAdminAccess(user)
   const {logout} = useAuthentication()
   const location = useLocation()
   const isOnLawPage = /^\/leis\/[^/]+$/.test(location.pathname)
@@ -43,8 +45,14 @@ const Navbar = () => {
 
                 <ul className={`dropdown-menu ${dropdownOpen ? 'open' : ''}`}>
                   <NavLink className='a1' to='/profile' onClick={() => handleItemClick()}><li>Meu Painel </li></NavLink>
-                  <NavLink className='a1' to='/insertlaws'><li>Incluir leis</li></NavLink>
-                  <NavLink to='/insertlaws/comparar' target="_blank" rel="noopener noreferrer" className="a1 "><li>Comparar Leis</li></NavLink>
+                  <NavLink className='a1' to='/leis-usuario'><li>Minhas Leis</li></NavLink>
+                  {isAdmin && (
+                    <>
+                      <NavLink className='a1' to='/insertlaws'><li>Incluir leis</li></NavLink>
+                      <NavLink to='/insertlaws/comparar' target="_blank" rel="noopener noreferrer" className="a1 "><li>Comparar Leis</li></NavLink>
+                    </>
+                  )}
+                  
                   <li className='btn3' onClick={() => handleItemClick(logout)}>Sair</li>
                 </ul>
               </li>

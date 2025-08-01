@@ -6,28 +6,27 @@ const Testes = ({user}) => {
   const [teste, setTeste] = useState(null)
   const [leis, setLeis] = useState([])
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        //Minha coleção leis ------------------------------------
-        const leiRef = collection(db, 'leis')
-        const leiSnap = await getDocs(leiRef)
+useEffect(() => {
+  const loadData = async () => {
+    try {
+      // Leis públicas
+      const leiRef = collection(db, 'leis')
+      const leiSnap = await getDocs(leiRef)
 
-        const leis = []
-        leiSnap.docs.forEach(doc=>{
-          leis.push({id: doc.id, title: doc.data().aTitle})
-        })
-        setLeis(leis)
-        // console.log(leis)
+      const leis = []
+      leiSnap.docs.forEach(doc => {
+        leis.push({ id: doc.id, title: doc.data().aTitle })
+      })
+      setLeis(leis)
 
-        //Minha coleção users ------------------------------------
+      // Dados do usuário, apenas se logado
+      if (user) {
         const userRef = collection(db, 'users', user.uid, 'alteracoesUsuario', 'AVTOHmcZho0i3TCYSpX5', 'disps')
         const userSnap = await getDocs(userRef)
         userSnap.docs.forEach(doc => {
           // console.log('Dispositivos alterados: ', doc.data().id)
         })
 
-        //Entendendo useMergeLaw---------------------------------------------------------
         const originalRef = collection(db, "leis", 'AVTOHmcZho0i3TCYSpX5', "disps")
         const alteredRef = collection(db, "users", user.uid, "alteracoesUsuario", 'AVTOHmcZho0i3TCYSpX5', "disps")
 
@@ -35,19 +34,22 @@ const Testes = ({user}) => {
           getDocs(originalRef),
           getDocs(alteredRef)
         ])
+
         alteredSnap.forEach(doc => {
           const data = doc.data()
           const comentarioHTML = data.comentarioHTML ? data.comentarioHTML : ''
-          
           const novoHtml = (data.html || "") + comentarioHTML
         })
-      } catch (error) {
-        console.log('DEU ERRO, LAIO: ', error)
       }
-    }
 
-    loadData()
-  }, [])
+    } catch (error) {
+      console.log('DEU ERRO, LAIO: ', error)
+    }
+  }
+
+  loadData()
+}, [])
+
 
   return (
     <div>

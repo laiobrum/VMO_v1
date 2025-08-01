@@ -3,9 +3,11 @@ leis (coleção)
 │
 ├─ lei_8072_1990 (documento)
 │   ├─ aTitle: "Lei dos Crimes Hediondos"
-│   ├─ numLeiC: "8072"
-│   ├─ numLeiR: "1990"
+|   ├─ apelido: "lei-crimes-tortura"
+│   ├─ numLeiC: "LEI Nº 9.455, DE 7 DE ABRIL DE 1997"
+│   ├─ numLeiR: "L9455"
 │   ├─ createdAt: timestamp
+│   ├─ texto: "<p>texto corrido sem separação em html completo da lei aqui</p>"
 │   └─ disps (subcoleção)
 │       ├─ art1 (documento)
 │       │   ├─ id: "art1"

@@ -11,44 +11,41 @@ export const useMergedLaw = ({ userId, leiId }) => {
     const fetchData = async () => {
       try {
         const originalRef = collection(db, "leis", leiId, "disps")
-        const alteredRef = collection(db, "users", userId, "alteracoesUsuario", leiId, "disps")
+        const originalSnap = await getDocs(originalRef)
 
-        const [originalSnap, alteredSnap] = await Promise.all([
-          getDocs(originalRef),
-          getDocs(alteredRef)
-        ])
-
-        //Mapeamento do texto de lei original
+        // Mapeia os dispositivos originais
         const originalMap = {}
         originalSnap.forEach(doc => {
           const data = doc.data()
           originalMap[doc.id] = { id: doc.id, html: data.html, ordem: data.ordem }
         })
 
-        //Insere a a alteração do usuário no texto original
-        alteredSnap.forEach(doc => {
-          const data = doc.data()
-          const comentarioHTML = data.comentario ? data.comentario : ''
-          const novoHtml = (data.html || "") + comentarioHTML
+        // Se o usuário estiver logado, tenta buscar alterações
+        if (userId) {
+          const alteredRef = collection(db, "users", userId, "alteracoesUsuario", leiId, "disps")
+          const alteredSnap = await getDocs(alteredRef)
 
-          //Se houver uma alteração para um id existente, ela substitui o html, mas mantém a ordem original.
-          if (originalMap[doc.id]) {
-            originalMap[doc.id] = {
-              id: doc.id,
-              html: novoHtml, // troca o html, se tiver dentro do DB de alterados
-              ordem: originalMap[doc.id].ordem  // mantém a ordem do original
-            }
-          } else {
-            // caso raro: Se a alteração não tiver correspondente no original, é adicionada com ordem = 99999 (vai pro final).
-            originalMap[doc.id] = {
-              id: doc.id,
-              html: novoHtml,
-              ordem: 99999 // joga pro final, mas você pode escolher outro critério
-            }
-          }
-        })
+          alteredSnap.forEach(doc => {
+            const data = doc.data()
+            const comentarioHTML = data.comentario ? data.comentario : ''
+            const novoHtml = (data.html || "") + comentarioHTML
 
-        //Converte o originalMap em array, ordena pela ordem e armazena em mergedDisps.
+            if (originalMap[doc.id]) {
+              originalMap[doc.id] = {
+                id: doc.id,
+                html: novoHtml,
+                ordem: originalMap[doc.id].ordem
+              }
+            } else {
+              originalMap[doc.id] = {
+                id: doc.id,
+                html: novoHtml,
+                ordem: 99999
+              }
+            }
+          })
+        }
+
         const merged = Object.values(originalMap).sort((a, b) => a.ordem - b.ordem)
         setMergedDisps(merged)
       } catch (err) {
@@ -59,7 +56,7 @@ export const useMergedLaw = ({ userId, leiId }) => {
       }
     }
 
-    if (userId && leiId) fetchData()
+    if (leiId) fetchData() // Agora roda mesmo sem userId
   }, [userId, leiId])
 
   return { mergedDisps, loading, error }
