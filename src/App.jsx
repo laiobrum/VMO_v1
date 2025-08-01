@@ -18,6 +18,7 @@ import TodasLeis from "./pages/TodasLeis";
 import VisualizeLei from "./pages/VisualizeLei";
 import CompararLeis from "./components/CompararLeis";
 import LeisUsuario from "./pages/LeisUsuario";
+import BuscarDispositivosPorTexto from "./components/BuscarDispositivoPorTexto";
 
 
 function App() {
@@ -58,6 +59,7 @@ function App() {
               <Route path="/insertlaws" element={<InserirLeis />} />
               <Route path="/insertlaws/comparar" element={<CompararLeis />} />
               <Route path="/teste-nova-lei" element={<TesteLei />} />
+              <Route path="/conserto-base-dados" element={<BuscarDispositivosPorTexto />} />
             </Route>
 
             {/* ROTAS PÚBLICAS PARA 'customer' */}

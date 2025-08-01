@@ -11,7 +11,6 @@ const Home = () => {
   return (
     <div>
         <h1>Home</h1>
-        <Testes user={user} />
         <h2>Acesso rápido</h2>
 
         <div className="leisContainer">
