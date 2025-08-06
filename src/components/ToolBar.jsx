@@ -290,7 +290,7 @@ const ToolBar = ({bookRef, user, leiId, onRestaurarTxtOriginal, modoOriginalAtiv
                 className={`btnSwitch ${modoOriginalAtivo ? 'btnSwitchClicked' : ''}`} title='Reportar erro' onClick={restaurarTextoOriginal} disabled={loadingOriginal}><ToggleSwitch isOn={modoOriginalAtivo} handleToggle={restaurarTextoOriginal} />Texto original
               </button>
 
-              <button className='btnTool' title='Exibir texto revogado' onClick={()=>setAlertMsg('Reporte o erro clicando no botão ⚠︎ que aparece ao passar o mouse no texto da lei')} ><TiWarningOutline /> Reportar erro</button>
+              <button className='btnTool' title='Reportar Erro' onClick={()=>setAlertMsg('Reporte o erro clicando no botão ⚠︎ que aparece ao passar o mouse no texto da lei')} ><TiWarningOutline /> Reportar erro</button>
 
                 <div className='letrasize'>
                   <button className='btnTool' onClick={() => setFontSize(prev => Math.max(prev - 1, 12))} title="Diminuir texto">A-</button>
@@ -300,6 +300,10 @@ const ToolBar = ({bookRef, user, leiId, onRestaurarTxtOriginal, modoOriginalAtiv
 
               <button className='btnTool' title='' >LANÇAMENTO VERSÃO BETA:</button>
               <button className='btnTool' title='' >Refs cruzadas</button>
+              <button className='btnTool' title='' >Refs cruzadas na mesma lei (art. x desta lei)</button>
+              <button className='btnTool' title='' >Aumentar margin-left pq txt ruim de marcar</button>
+              <button className='btnTool' title='' >Alteração de qualquer dispositivo em bloco</button>
+              <button className='btnTool' title='' >Alteração de texto revogado/incluído/alterado</button>
               <button className='btnTool' title='' >Modal que abre para usuário se cadastrar</button>
               <button className='btnTool' title='' >Botões hover deslocados estão ATRAPALHANDO MUITO!</button>
               <button className='btnTool' title='' >No art. 109, CP, mesmo com texto original, me mostrou o texto alterado</button>

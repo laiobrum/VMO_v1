@@ -90,6 +90,7 @@ ul {
   cursor: pointer;
 }
 .leiRef2 {/* leiRef2 - Redação dada, Incluído pelo...etc */
+  display: none; /* Vai ficar desaparecido! */
   color: grey;
   font-weight:normal;
 }

@@ -21,6 +21,7 @@ const VisualizeLei = () => {
     const [editorBelowP, setEditorBelowP] = useState(null)
     const [activeEditorP, setActiveEditorP] = useState(null)
     const [isToolbarHovered, setIsToolbarHovered] = useState(false)
+    const [reportarErroAberto, setReportarErroAberto] = useState(false)//Controle do modal reportar erro
     const [modoOriginalAtivo, setModoOriginalAtivo] = useState(false)
     const [textoOriginal, setTextoOriginal] = useState([])
     const [refData, setRefData] = useState(null)
@@ -173,20 +174,25 @@ const VisualizeLei = () => {
     }, [mergedDisps, textoOriginal])//Não colocar isToolbarHovered, pq sempre quando hover, ele restarta o useEffect e tira as marcações! Nem o activeEditorP, pq ele estraga tudo!
 
     //-------------------------------------------------
-    //------CAIXA DE REFERÊNCIA DE LEI CRUZADA--------
+    //------CAIXA DE REFERÊNCIA DE LEI CRUZADA---------
     //-------------------------------------------------
     useEffect(() => {
         const handleClick = (e) => {
         const span = e.target.closest('.leiRef')
         if (span) {
+            e.stopPropagation()
             const codigoLei = span.getAttribute('data-lei')
             const rect = span.getBoundingClientRect()
             const scrollTop = window.scrollY || document.documentElement.scrollTop
             const scrollLeft = window.scrollX || document.documentElement.scrollLeft
 
             setRefData({
-            codigoLei,
-            pos: { top: rect.bottom + scrollTop + 8, left: rect.left + scrollLeft }
+                codigoLei,
+                pos: {
+                    top: rect.bottom + scrollTop + 8,
+                    left: rect.left + scrollLeft
+                },
+                textoSpan: span.innerText
             })
         } else {
             setRefData(null)// Clicar fora fecha a caixa
@@ -226,6 +232,7 @@ const VisualizeLei = () => {
                 <CaixaReferenciada 
                 codigoLei={refData.codigoLei}
                 pos={refData.pos}
+                textoSpan={refData.textoSpan} 
                 onClose={() => setRefData(null)}
                 />
             )}
@@ -261,14 +268,17 @@ const VisualizeLei = () => {
                     }}
                     onMouseEnter={() => setIsToolbarHovered(true)}
                     onMouseLeave={() => {
-                        setIsToolbarHovered(false)
-                        setHoveredP(null)
+                        setIsToolbarHovered(false);
+                        if (!reportarErroAberto) setHoveredP(null); // <-- Só fecha se o modal não estiver aberto!
                     }}
                 >
                     <ToolBar2
                         bookRef={bookRef}
                         hoveredP={hoveredP}
                         editorIsActive={hoveredP && activeEditorP === hoveredP}
+                        reportarErroAberto={reportarErroAberto}//Controla modal de erro
+                        setReportarErroAberto={setReportarErroAberto}//Controla modal de erro
+                        modoOriginalAtivo={modoOriginalAtivo}
                         onToggleEditor={() => {
                             if (!hoveredP) return
 

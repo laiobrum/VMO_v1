@@ -1,12 +1,8 @@
 import { Link, NavLink } from "react-router-dom"
 import { useFetchDocuments } from "../hooks/useFetchDocuments"
-import TiptapEditor from "../components/TiptapEditor"
-import Testes from "../components/Testes"
-import { useAuthValue } from "../context/AuthContext"
 
 const Home = () => {  
   const { documents: leis, loading } = useFetchDocuments('leis') 
-  const { user } = useAuthValue()
 
   return (
     <div>
@@ -17,7 +13,7 @@ const Home = () => {
           {loading && <li>Carregando...</li>}
             {leis.map((lei) => (
                 <p key={lei.id}>
-                    <NavLink to={`/leis/${lei.apelido}`}>{lei.aTitle}</NavLink>
+                    <NavLink to={`/leis/${lei.apelido}`}>{lei.aTitle} <span className="small">{lei.numLeiC}</span></NavLink>
                 </p>
             ))}
         </div>

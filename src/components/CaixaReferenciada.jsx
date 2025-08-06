@@ -1,83 +1,159 @@
-/* Agora vou te passar uma tarefa muito complexa, que preciso que você raciocine bem em como é a melhor forma de implantá-la.
-Considere tudo o que eu já te falei sobre meu projeto de consulta de leis, que estou construindo.
-Conhecendo meu projeto e minha estrutura de dados como exemplificada abaixo, que é usada para salvar a lei em seu texto original, preciso que você me ajude a criar um componente e um hook que crie as referências cruzadas no meu texto de lei. O objetivo é conseguir alterar a lei original na base de dados. Como deve ser isso:
-Há dispositivos legais que referenciam outros, por exemplo:
-<p id="p14"><span class="titles">V - </span>por crime previsto na <span class="leiRef"> Lei nº 13.260, de 16 de março de 2016;</span></p>
-Para conseguirmos fazer isso, eu já criei o <span class="leiRef">, que consegue separar o texto de lei que deve ser referenciado, bem como para conseguir transformá-lo em um botão, que ao ser apertado, abrirá uma caixa flutuante, que mostrará os primeiros <p> que existem na lei, que são os <p> que explicam o que a lei se trata, o chamado "preâmbulo".
-Na base de dados, a lei já tem todas as referências necessárias, especialmente o campo L9455, que criei para facilitar encontrar a lei. No meu exemplo de span acima, normalizar Lei 13.260 para L13256 pode ajudar a encontrar a lei referida na base de dados. Lembrar que existem vários tipos de normas, como Lei (L) Decreto (D), Decreto-Lei (DEL), Medida Provisória (MP), Constituição Federal (CF), Lei Complementar (LC), Emenda Constitucional (EC), entre outros tipos de normas, que poderão ser considerados quando aparecerem.
-Importante considerar que estou pedindo uma funcionalidade que realize a criação de referências cruzadas como um processo que vai acontecer ao longo do tempo, que vai sempre buscar as referências de uma lei nova que eu estiver inserindo no banco de dados, bem como buscar por todo banco de dados de leis originais algum dispositivo que referencie esta lei nova que estou inserindo.
-
-leis (coleção)
-│
-├─ lei_8072_1990 (documento)
-│   ├─ aTitle: "Lei dos Crimes Hediondos"
-|   ├─ apelido: "lei-crimes-tortura"
-│   ├─ numLeiC: "LEI Nº 9.455, DE 7 DE ABRIL DE 1997"
-│   ├─ numLeiR: "L9455"
-│   ├─ createdAt: timestamp
-│   ├─ texto: "<p>texto corrido sem separação em html completo da lei aqui</p>"
-│   └─ disps (subcoleção)
-│       ├─ art1 (documento)
-│       │   ├─ id: "art1"
-│       │   ├─ html: "<p id='art1'>Art. 1º ...</p>"
-│       │   ├─ ordem: 1
-│       │   ├─ createdAt: timestamp
-│       │   └─ comentariosPublicos (subcoleção)
-│       │       ├─ comentario_abc123 (documento)
-│       │       │   ├─ userId: "abc123"
-│       │       │   ├─ nomeAutor: "Maria F."
-│       │       │   ├─ comentario: "<p>Texto público...</p>"
-│       │       │   ├─ criadoEm: timestamp
-│       │       │   └─ reportado: false
-│       │       └─ comentario_def456 (documento)
-│       │           ├─ userId: "xyz789"
-│       │           ├─ nomeAutor: "João S."
-│       │           ├─ comentario: "<p>Outro comentário...</p>"
-│       │           ├─ criadoEm: timestamp
-│       │           └─ reportado: true
-*/
-
 import { useEffect, useState } from "react"
 import { db } from "../firebase/config"
-import { collection, query, where, getDocs } from "firebase/firestore"
+import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore"
 
-const CaixaReferenciada = ({ codigoLei }) => {
+// function extrairArtigos(texto) {
+//   const regex = /\b(art(?:s)?\.?|artigo(?:s)?)\s*(\d+[ºA-Z\-]*)/gi;
+//   const matches = [...texto.matchAll(regex)];
+//   const artigos = matches.map((m) =>
+//     `art${m[2].replace('-', '').toLowerCase()}`
+//   );
+//   return [...new Set(artigos)];
+// }
+
+// function extrairArtigos(texto) {
+//   const artigos = new Set();
+//   const regexGrupo = /\b(art(?:s)?\.?|artigo(?:s)?)\s+([^<;.]+)/gi;
+
+//   let match;
+//   while ((match = regexGrupo.exec(texto)) !== null) {
+//     const trecho = match[2];
+
+//     const numeros = [...trecho.matchAll(/\d+[ºA-Z\-]*/gi)];
+
+//     numeros.forEach(m => {
+//       const normalizado = m[0].replace(/[-º]/g, '').toLowerCase();
+//       artigos.add(`art${normalizado}`);
+//     });
+//   }
+
+//   return [...artigos];
+// }
+
+function extrairArtigos(texto) {
+  const artigos = new Set();
+  // Encontra expressões como "art. 121-A", "arts. 118, 125 e 127", etc.
+  const regexGrupo = /\b(art(?:s)?\.?|artigo(?:s)?)\s+([^<;.]+)/gi;
+  let match;
+  while ((match = regexGrupo.exec(texto)) !== null) {
+    const trecho = match[2];
+    // Ignorar referências a parágrafos
+    const trechoLimpo = trecho.replace(/§{1,2}\s*\d+[º\.]*/gi, '');
+    // Agora extraímos apenas os números e letras
+    const numeros = [...trechoLimpo.matchAll(/\d+[ºA-Z\-]*/gi)];
+    numeros.forEach(m => {
+      const normalizado = m[0].replace(/[-º]/g, '').toLowerCase();
+      // Evita incluir números muito curtos isolados (ex: '1' solto após vírgula)
+      if (normalizado.length >= 2 || normalizado.match(/\d{2,}/)) {
+        artigos.add(`art${normalizado}`);
+      }
+    });
+  }
+
+  return [...artigos];
+}
+
+
+const CaixaReferenciada = ({ codigoLei, pos, onClose, textoSpan }) => {
   const [conteudo, setConteudo] = useState([])
+  const [artigos, setArtigos] = useState([])
 
   useEffect(() => {
-    const fetchLei = async () => {
-      const q = query(collection(db, "leis"), where("numLeiR", "==", codigoLei))
-      const snap = await getDocs(q)
-      if (!snap.empty) {
-        const texto = snap.docs[0].data().texto
-        const paragrafos = texto.match(/<p[^>]*>.*?<\/p>/gi) || []
-        setConteudo(paragrafos.slice(0, 3))
+    const fetchLeiEArtigos = async () => {
+      try {
+        const q = query(collection(db, "leis"), where("numLeiR", "==", codigoLei))
+        const snap = await getDocs(q)
+
+        if (snap.empty) {
+          setConteudo(["<p><i>Lei não encontrada.</i></p>"])
+          return
+        }
+
+        const leiDoc = snap.docs[0]
+        const apelido = leiDoc.data().apelido
+        const numLeiC = leiDoc.data().numLeiC
+        const texto = leiDoc.data().texto
+        const paragrafos = texto.match(/<p[^>]*>.*?<\/p>/gis) || []
+        const paragrafos2a3 = paragrafos.slice(1, 3)
+        const conteudoL = []
+        conteudoL.push(apelido)
+        conteudoL.push(numLeiC)
+        conteudoL.push(paragrafos2a3)
+
+        setConteudo(conteudoL)
+
+        // Extrair artigos mencionados
+        const artigosExtraidos = extrairArtigos(textoSpan)
+        console.log(artigosExtraidos)
+        if (artigosExtraidos.length === 0) return
+
+        const artigosPromises = artigosExtraidos.map(async (artId) => {
+          const artDoc = await getDoc(doc(db, "leis", leiDoc.id, "disps", artId))
+          if (artDoc.exists()) return artDoc.data().html
+          return `<p><i>Artigo ${artId.replace('art', '')} não encontrado.</i></p>`
+        })
+
+        const artigosHtml = await Promise.all(artigosPromises)
+        setArtigos(artigosHtml)
+
+      } catch (error) {
+        setConteudo(["<p><i>Erro ao buscar a lei.</i></p>"])
       }
     }
 
-    fetchLei()
-  }, [codigoLei])
+    fetchLeiEArtigos()
+  }, [codigoLei, textoSpan])
 
   return (
-    <div className="tooltip-referencia"
-    style={{
+    <div
+      className="tooltip-referencia"
+      style={{
         position: 'absolute',
         top: pos.top,
         left: pos.left,
-        zIndex: 999,
+        zIndex: 9999,
         background: 'white',
         border: '1px solid #ccc',
         borderRadius: '8px',
         padding: '12px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
-    }}>
+        maxWidth: '450px',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
+      }}
+    >
+
       <button onClick={onClose} style={{ float: 'right' }}>✕</button>
-      {conteudo.map((p, i) => (
-        <div key={i} dangerouslySetInnerHTML={{ __html: p }} />
-      ))}
+      {/* CONTEÚDO COM O TEXTO E LINK DA LEI: */}
+        {conteudo.length >= 2 && (
+          <p className="titles center">
+            <a href={`/leis/${conteudo[0]}`} target="_blank" rel="noopener noreferrer">
+              {conteudo[1]}
+            </a>
+          </p>
+        )}
+        {Array.isArray(conteudo[2]) &&
+          conteudo[2].map((p, i) => (
+            <div key={`p${i}`} dangerouslySetInnerHTML={{ __html: p }} />
+          ))
+        }
+      {/* CONTEÚDO COM A MENSAGEM DE ERRO: */}
+        {conteudo.length === 1 && typeof conteudo[0] === 'string' && (
+          <div dangerouslySetInnerHTML={{ __html: conteudo[0] }} />
+        )}
+
+      {artigos.length > 0 && (
+        <>
+          <hr />
+          <strong>Artigos citados:</strong>
+          {artigos.map((html, i) => (
+            <div key={`a${i}`} dangerouslySetInnerHTML={{ __html: html }} />
+          ))}
+        </>
+      )}
     </div>
   )
 }
 
 export default CaixaReferenciada
+
+
 

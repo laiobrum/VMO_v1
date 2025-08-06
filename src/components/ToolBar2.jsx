@@ -14,12 +14,18 @@ import ReportarErro from './ReportarErro';
 import { useAuthValue } from '../context/AuthContext';
 
 
-const ToolBar2 = ({bookRef, hoveredP, onToggleEditor, editorIsActive }) => {
+const ToolBar2 = ({bookRef, hoveredP, onToggleEditor, editorIsActive, setReportarErroAberto, modoOriginalAtivo }) => {
   const {user} = useAuthValue()
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const handleOpen = () => setIsModalOpen(true)
-  const handleClose = () => setIsModalOpen(false)
+  const handleOpen = () => {
+    setIsModalOpen(true);
+    setReportarErroAberto(true);
+  };
+  const handleClose = () => {
+    setIsModalOpen(false);
+    setReportarErroAberto(false);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -43,7 +49,7 @@ const ToolBar2 = ({bookRef, hoveredP, onToggleEditor, editorIsActive }) => {
         {user && (
           <>
           <button className='btnTool2' onClick={handleOpen} title='Reportar erro'><TiWarningOutline /></button>
-          <ReportarErro hoveredP={hoveredP} isOpen={isModalOpen} onClose={handleClose} onSubmit={handleSubmit} />
+          <ReportarErro hoveredP={hoveredP} isOpen={isModalOpen} onClose={handleClose} onSubmit={handleSubmit} setReportarErroAberto={setReportarErroAberto} modoOriginalAtivo={modoOriginalAtivo} />
           </>
         )}
         

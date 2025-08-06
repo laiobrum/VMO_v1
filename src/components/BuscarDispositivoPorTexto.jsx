@@ -22,7 +22,7 @@ const BuscarDispositivosPorTexto = () => {
       <h2>Buscar texto nos dispositivos da Lei</h2>
       <form onSubmit={handleSubmit} style={{display: "flex", flexDirection: "column", gap: 12}}>
         <label>
-          ID da Lei (ex: L8072, D12338):
+          ID da Lei (ex: AVTOHmcZho0i3TCYSpX5):
           <input
             value={leiId}
             onChange={e => { setLeiId(e.target.value); setConsultar(false); }}

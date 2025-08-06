@@ -5,6 +5,10 @@ import { addCFTags, fixCFTags } from "../utils/Leis em HTML/CF/CFtags";
 import { useSaveLeiOriginal } from "../hooks/useSaveLeiOriginal";
 import { NavLink } from "react-router-dom";
 import { useFetchDocuments } from "../hooks/useFetchDocuments";
+import { tirarEspacos } from "../utils/tirarEspacos";
+import { inserirReferenciasExternasHTML } from "../utils/inserirReferenciasExternasHTML";
+import { inserirReferenciasInternasNoHTML } from "../utils/inserirReferenciasInternasNoHTML";
+
 
 function InserirLeis() {
     const [title, setTitle] = useState('')
@@ -40,6 +44,10 @@ function InserirLeis() {
             //Exclui atributos de <p>
             .replace(/<p[^>]*>/gi, '<p>')
 
+            //Substitui <sup>o</sup> por º
+            .replace(/<sup>o<\/sup>/gi, 'º')
+            .replace(/<sup><u>o<\/u><\/sup>/gi, 'º')
+
             // //Tags
             .replace(/<(html|font|span|u|sup|i|em|small|table|b|td|div|body|tbody|strong|tr|blockquote)[^>]*>/gi, '')//Remove todas as tags inúteis
             .replace(/<\/(html|font|span|u|sup|i|em|small|table|b|td|div|body|tbody|strong|tr|blockquote)>/gi, '')//Remove fechamento das tags inúteis
@@ -68,8 +76,6 @@ function InserirLeis() {
         /* ARQUIVO ADICIONADOR DE TAGS: */
         // const textoLimpo = addCFTags(texto)
         // const textoLimpo = AddIndultoTags(texto)
-            
-
 
             /* TESTES - OS TESTES DEVEM SER AQUI, VISTO QUE O VITE NÃO ATUALIZA OS ARQUIVOS REMOVEDORES NA HORA!!! */
             const textoLimpo = texto
@@ -86,10 +92,10 @@ function InserirLeis() {
         //Art.
         .replace(/\bArt\. (\d+)o\b/g, 'Art. $1.º')//Art. 1o -> Art. 1.º
         .replace(/\bArt\. (\d+)º(?![.\w])/g, 'Art. $1.º')
-                .replace(/\b(Art\.\s*\d+\.\º)\s*-\s*/g, '$1 ')//Art. X.º - → Art. X.º
-                .replace(/\b(Art\.\s*\d+)\s*-\s*/g, '$1. ')//Art. X - → Art. X.
-                .replace(/\bArt\. (\d+)\.\s*([A-Z])\./g, 'Art. $1-$2.')//Art. 154. A. → Art. 154-A.
-                .replace(/§\s*(\d+)\s*º\b/g, '§ $1.º')//
+        .replace(/\b(Art\.\s*\d+\.\º)\s*-\s*/g, '$1 ')//Art. X.º - → Art. X.º
+        .replace(/\b(Art\.\s*\d+)\s*-\s*/g, '$1. ')//Art. X - → Art. X.
+        .replace(/\bArt\. (\d+)\.\s*([A-Z])\./g, 'Art. $1-$2.')//Art. 154. A. → Art. 154-A.
+        .replace(/§\s*(\d+)\s*º\b/g, '§ $1.º')//
         .replace(/\bArt\. (\d+)o-([A-Z])\./g, 'Art. $1.º-$2.')//Art. 8o-A. → Art. 8.º-A.
         .replace(/\bArt\. (\d+)([A-Z])\./g, 'Art. $1-$2.')//Art. 10A. → Art. 10-A.
 
@@ -149,15 +155,10 @@ function InserirLeis() {
         return 
     }
 
-    const tirarEspacos = (e) => {
+    const rmvEspacos = (e) => {
         e.preventDefault()
 
-        const textoLimpo = texto
-
-        .replace(/[ \t]{2,}/g, ' ')       // Remove múltiplos espaços por 1
-        .replace(/>\s+</g, '> <')         // Substitui por um único espaço entre tags
-        .replace(/\s+</g, ' <')            // Mantém: limpa espaço antes de tag se for texto solto
-        .replace(/>\s+/g, '>')            // Mantém: limpa espaço depois de fechamento de tag, exceto entre tags
+        const textoLimpo = tirarEspacos(texto)
 
         setTexto(textoLimpo)
         return 
@@ -190,27 +191,52 @@ function InserirLeis() {
         return 
     }
 
-    const createIds = (e) => {
-        e.preventDefault()
-        let contador = 1;
-        const textoLimpo = texto
+const createIds = (e) => {
+    e.preventDefault()
+    let contador = 1
+    const idsGerados = new Set()
 
-        .replace(/<p(?![^>]*id=)([^>]*)>/gi, (_, otherAttrs) => {
-            const id = `p${contador++}`
-            return `<p id="${id}"${otherAttrs}>`
+    const textoComIds = texto.replace(/<p(?![^>]*id=)([^>]*)>(.*?)<\/p>/gis, (match, otherAttrs, innerHTML) => {
+        const isRevogado = /class\s*=\s*["'][^"']*\brevogado\b[^"']*["']/i.test(otherAttrs)
+
+        // Extrai só o conteúdo de <span class="titles">...</span>
+        const titlesMatch = innerHTML.match(/<span[^>]*class=["']titles["'][^>]*>(.*?)<\/span>/i)
+        let id
+        if (titlesMatch) {
+            const titulo = titlesMatch[1]
+            // Tenta extrair "Art. 4º", "Art. 12", "Art. 2-A" etc. SOMENTE do <span class="titles">
+            const artigoMatch = titulo.match(/Art\.?\s*(\d+)(?:[\.\ºoº]?)(?:-([A-Za-z]))?/i)
+            if (artigoMatch) {
+                const numero = artigoMatch[1]
+                const sufixo = artigoMatch[2] ? artigoMatch[2].toLowerCase() : ""
+                let tentativaId = `art${numero}${sufixo}${isRevogado ? "rv" : ""}`
+
+                // Garante unicidade
+                let contadorSufixo = 1
+                while (idsGerados.has(tentativaId)) {
+                    tentativaId = `art${numero}${sufixo}${isRevogado ? "rv" : ""}_${contadorSufixo++}`
+                }
+
+                id = tentativaId
+                idsGerados.add(id)
+            }
+        }
+        // Se não gerou id baseado em artigo, usa fallback pX
+        if (!id) {
+            while (idsGerados.has(`p${contador}`)) contador++
+            id = `p${contador++}`
+            idsGerados.add(id)
+        }
+        return `<p id="${id}"${otherAttrs}>${innerHTML}</p>`
         })
-
-        setTexto(textoLimpo)
-        return 
+        setTexto(textoComIds)
     }
 
     const checkSameId = (e) => {
         e.preventDefault()
-
         const regex = /id\s*=\s*["']([^"']+)["']/g;
         const ids = {};
         const duplicados = [];
-
         let match;
         while ((match = regex.exec(texto)) !== null) {
             const id = match[1];
@@ -220,7 +246,6 @@ function InserirLeis() {
             ids[id] = true;
             }
         }
-
         if (duplicados.length > 0) {
             alert(`IDs duplicados encontrados:\n\n${[...new Set(duplicados)].join('\n')}`);
         } else {
@@ -233,33 +258,16 @@ function InserirLeis() {
     //------------------------------------------------------------
     // GERAR LINKS
     //------------------------------------------------------------
-    const { documents: todasAsLeis } = useFetchDocuments('leis')
-    const mapaNumLeiR = new Map(todasAsLeis.map(lei => [lei.numLeiR.toLowerCase(), lei.apelido]))
-    const gerarLinks = (e) => {
+    const inserirRef = (e) => {
+        if(!numLeiR) return alert("Insira o Número da lei resumido")
         e.preventDefault()
-        let textoAtual = texto
+        let textoRefs = inserirReferenciasExternasHTML(texto)
+        textoRefs = inserirReferenciasInternasNoHTML(textoRefs, numLeiR)
 
-          // Regex que captura artigos (opcional) + leis/decretos
-            textoAtual = textoAtual.replace(
-                /(art\.?\s*\d+[A-Z\-]*\s+do\s+)?(Decreto(-Lei)?|Lei)\s*n[ºo]\s*(\d{3,5})[^<]*?(19|20)\d{2}/gi,
-                (match, artigoParte, tipoLei, _, numero, ano) => {
-                const tipo = tipoLei.startsWith("D") ? "D" : "L";
-                const numLeiR = `${tipo}${numero}`;
-
-                const apelido = mapaNumLeiR.get(numLeiR.toLowerCase());
-
-                if (!apelido) return match; // Se não encontrou a lei, não altera
-
-                const artigoMatch = artigoParte?.match(/art\.?\s*(\d+[A-Z\-]*)/i);
-                const artigoId = artigoMatch ? `art${artigoMatch[1].toLowerCase()}` : null;
-
-                const href = `/leis/${apelido}${artigoId ? `#${artigoId}` : '#p1'}`;
-
-                //leiRef - referência de arts; leiRef2 - Redação dada, Incluído pelo...etc; leiRef3 - msm do 2, mas no título; leiRef4 - Vide lei tal
-                return `<a class="leiRef" href="${href}" ${artigoId ? `data-art="${artigoId}"` : ''}>${match}</a>`;
-            }
-        )
-        setTexto(textoAtual);
+        setTexto(textoRefs);
+        alert("1. Pesquisar texto 'do art', visto que ele não pega bem; \n 2. Puxar o </span> para menções de múltiplos artigos.")
+        console.log("1. Pesquisar texto 'do art', visto que ele não pega bem; \n 2. Puxar o </span> para menções de múltiplos artigos.")
+        return
     }
 
     //------------------------------------------------------------
@@ -307,14 +315,14 @@ function InserirLeis() {
                     <button onClick={addMyTags} className="btn2">Adicionar HTML</button>&nbsp;➤&nbsp;
                     <button onClick={createIds} className="btn2">Criar IDs que faltam</button>&nbsp;➤&nbsp;
                     <button onClick={checkSameId} className="btn2">IDs repetidos</button>&nbsp;➤&nbsp;
-                    <button className="btn2" onClick={gerarLinks}>Gerar links</button>&nbsp;➤&nbsp;
+                    <button onClick={inserirRef} className="btn2">Gerar links</button>&nbsp;➤&nbsp;
                     <button onClick={visualize} className="btn2">Pré-visualizar</button>&nbsp;➤&nbsp;
                     <input className="btn1" type="submit" value={salvando ? "Salvando lei original..." : "Salvar Lei"} />&nbsp;&nbsp;
 
                     <br />
                     <br />
                     <button onClick={addTagSimples} className="btn2">Add tag simples</button>&nbsp;➤&nbsp;
-                    <button onClick={tirarEspacos} className="btn2">Tirar Espacos</button>&nbsp;➤&nbsp;
+                    <button onClick={rmvEspacos} className="btn2">Remover Espacos</button>&nbsp;➤&nbsp;
                     <NavLink to='/insertlaws/comparar' target="_blank" rel="noopener noreferrer" className="a2 ">Comparar Leis</NavLink>&nbsp;
                 </div>
             </form>

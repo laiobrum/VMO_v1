@@ -24,6 +24,12 @@ h2 {
   margin: 0;
   margin-bottom: .8em;
 }
+.small {
+  padding-top: 0;
+  margin-bottom: 5px;
+  font-size: x-small;
+  display: block;
+}
 .a1 {
   all: unset;
   font-weight: 500;
@@ -107,5 +113,14 @@ h2 {
 }
 .btnContainer {
   color: var(--btnColor-2);
+}
+.btnXcontainer {
+  text-align: end;
+}
+.btnX {
+  all: unset;
+  font-size: x-large;
+  cursor: pointer;
+  margin-right: 5px;
 }
 
