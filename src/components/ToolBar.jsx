@@ -17,10 +17,12 @@ import { useSaveUserAlterations } from '../hooks/useSaveUserAlterations';
 import { useFetchOriginalLei } from '../hooks/useFetchOriginalLei';
 import { ToggleSwitch } from './ToggleSwitch';
 import { TiWarningOutline } from 'react-icons/ti';
+import { LiaChalkboardTeacherSolid } from "react-icons/lia";
+
 
 const ToolBar = ({bookRef, user, leiId, onRestaurarTxtOriginal, modoOriginalAtivo, setModoOriginalAtivo}) => {
   const [alertMsg, setAlertMsg] = useState(null)
-  const [fontSize, setFontSize] = useState(14) 
+  const [fontSize, setFontSize] = useState(13) 
   
   //HOOKS
   //Salva alterações ao apertar botão
@@ -273,7 +275,10 @@ const ToolBar = ({bookRef, user, leiId, onRestaurarTxtOriginal, modoOriginalAtiv
             className='btnTool' title='Comentários da comunidade'><IoIosPeople />
           </button>
           <button 
-            className='btnTool' title='Exibir jurisprudência'><GoLaw />
+            className='btnTool' title='Comentários do professor'><LiaChalkboardTeacherSolid />
+          </button>
+          <button 
+            className='btnTool' title='Jurisprudência'><GoLaw />
           </button>
           <button 
             className={`btnTool ${showRevogados ? 'btnToolClicked' : ''}`} title='Exibir texto revogado' onClick={()=>toggleTool('revogados')}> <CgFormatStrike />

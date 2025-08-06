@@ -1,34 +1,8 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { db } from "../firebase/config"
 import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore"
 
-// function extrairArtigos(texto) {
-//   const regex = /\b(art(?:s)?\.?|artigo(?:s)?)\s*(\d+[ºA-Z\-]*)/gi;
-//   const matches = [...texto.matchAll(regex)];
-//   const artigos = matches.map((m) =>
-//     `art${m[2].replace('-', '').toLowerCase()}`
-//   );
-//   return [...new Set(artigos)];
-// }
 
-// function extrairArtigos(texto) {
-//   const artigos = new Set();
-//   const regexGrupo = /\b(art(?:s)?\.?|artigo(?:s)?)\s+([^<;.]+)/gi;
-
-//   let match;
-//   while ((match = regexGrupo.exec(texto)) !== null) {
-//     const trecho = match[2];
-
-//     const numeros = [...trecho.matchAll(/\d+[ºA-Z\-]*/gi)];
-
-//     numeros.forEach(m => {
-//       const normalizado = m[0].replace(/[-º]/g, '').toLowerCase();
-//       artigos.add(`art${normalizado}`);
-//     });
-//   }
-
-//   return [...artigos];
-// }
 
 function extrairArtigos(texto) {
   const artigos = new Set();
@@ -57,6 +31,9 @@ function extrairArtigos(texto) {
 const CaixaReferenciada = ({ codigoLei, pos, onClose, textoSpan }) => {
   const [conteudo, setConteudo] = useState([])
   const [artigos, setArtigos] = useState([])
+  const tooltipRef = useRef(null);
+  const [tooltipTop, setTooltipTop] = useState(pos.top);
+
 
   useEffect(() => {
     const fetchLeiEArtigos = async () => {
@@ -87,14 +64,50 @@ const CaixaReferenciada = ({ codigoLei, pos, onClose, textoSpan }) => {
         console.log(artigosExtraidos)
         if (artigosExtraidos.length === 0) return
 
+        // const artigosPromises = artigosExtraidos.map(async (artId) => {
+        //   const artDoc = await getDoc(doc(db, "leis", leiDoc.id, "disps", artId))
+        //   if (artDoc.exists()) return artDoc.data().html
+        //   return `<p><i>Artigo ${artId.replace('art', '')} não encontrado.</i></p>`
+        // })
+
         const artigosPromises = artigosExtraidos.map(async (artId) => {
-          const artDoc = await getDoc(doc(db, "leis", leiDoc.id, "disps", artId))
-          if (artDoc.exists()) return artDoc.data().html
-          return `<p><i>Artigo ${artId.replace('art', '')} não encontrado.</i></p>`
-        })
+          const artDoc = await getDoc(doc(db, "leis", leiDoc.id, "disps", artId));
+          if (!artDoc.exists()) {
+            return `<p><i>Artigo ${artId.replace('art', '')} não encontrado.</i></p>`;
+          }
+
+          const htmlArtigo = artDoc.data().html;
+
+          // Se for a DEL2848, vamos tentar puxar o tipo penal antes do artigo
+          if (codigoLei === 'DEL2848') {
+            // Encontrar o <p id="art312"> ou correspondente
+            const artigoIndex = paragrafos.findIndex(p => p.includes(`id="${artId}"`));
+            if (artigoIndex > 0) {
+              const anterior = paragrafos[artigoIndex - 1];
+              const isTipoPenal = anterior.includes('class="tipoPenal"');
+              if (isTipoPenal) {
+                return anterior + htmlArtigo;
+              }
+            }
+          }
+
+          return htmlArtigo;
+        });
+
 
         const artigosHtml = await Promise.all(artigosPromises)
         setArtigos(artigosHtml)
+
+        setTimeout(() => {
+          if (tooltipRef.current) {
+            const alturaReal = tooltipRef.current.offsetHeight;
+            const margem = 20;
+            const novaTop = pos.top + alturaReal + margem > window.innerHeight
+              ? pos.top - alturaReal - 90
+              : pos.top + 12;
+            setTooltipTop(novaTop);
+          }
+        }, 0);
 
       } catch (error) {
         setConteudo(["<p><i>Erro ao buscar a lei.</i></p>"])
@@ -104,22 +117,26 @@ const CaixaReferenciada = ({ codigoLei, pos, onClose, textoSpan }) => {
     fetchLeiEArtigos()
   }, [codigoLei, textoSpan])
 
+  const alturaCaixa = 250; // altura estimada da caixa em pixels
+  const margem = 20;
+  const deveAbrirParaCima = pos.top + alturaCaixa + margem > window.innerHeight;
+
+  const estiloTooltip = {
+    position: 'absolute',
+    top: tooltipTop,
+    left: pos.left,
+    zIndex: 9999,
+    background: 'white',
+    border: '1px solid #ccc',
+    borderRadius: '8px',
+    padding: '12px',
+    maxWidth: '450px',
+    boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
+  };
+
   return (
-    <div
-      className="tooltip-referencia"
-      style={{
-        position: 'absolute',
-        top: pos.top,
-        left: pos.left,
-        zIndex: 9999,
-        background: 'white',
-        border: '1px solid #ccc',
-        borderRadius: '8px',
-        padding: '12px',
-        maxWidth: '450px',
-        boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
-      }}
-    >
+    <div className="tooltip-referencia" ref={tooltipRef} style={estiloTooltip}>
+
 
       <button onClick={onClose} style={{ float: 'right' }}>✕</button>
       {/* CONTEÚDO COM O TEXTO E LINK DA LEI: */}
