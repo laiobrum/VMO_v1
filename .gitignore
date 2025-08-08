@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# nunca versionar chaves
+src/firebase/*.json
+*.secret.json
+*.key.json
+
+src/firebase/*.json
