@@ -13,13 +13,14 @@ import Recover from "./pages/Recover";
 import AreaRestrita from "./pages/AreaRestrita";
 import { useAdminAccess } from "./hooks/useAdminAccess";
 import InserirLeis from "./components/InserirLeis";
-import TesteLei from "./components/TesteLei";
 import TodasLeis from "./pages/TodasLeis";
 import VisualizeLei from "./pages/VisualizeLei";
 import CompararLeis from "./components/CompararLeis";
 import LeisUsuario from "./pages/LeisUsuario";
 import BuscarDispositivosPorTexto from "./components/BuscarDispositivoPorTexto";
 import ExcluirAlteracoesUser from "./components/ExcluirAlteracoesUser";
+import TesteNovaLei from "./components/TesteNovaLei";
+import EditarLeiAdmin from "./components/EditarLeiAdmin.jsx";
 
 
 function App() {
@@ -59,9 +60,10 @@ function App() {
               <Route path="/restrictarea" element={<AreaRestrita />} />
               <Route path="/insertlaws" element={<InserirLeis />} />
               <Route path="/insertlaws/comparar" element={<CompararLeis />} />
-              <Route path="/teste-nova-lei" element={<TesteLei />} />
+              <Route path="/teste-nova-lei" element={<TesteNovaLei />} />
               <Route path="/consulta-base-dados" element={<BuscarDispositivosPorTexto />} />
               <Route path="/excluir-alteracoes-user" element={<ExcluirAlteracoesUser />} />
+              <Route path="/editar-lei-admin" element={<EditarLeiAdmin />} />
             </Route>
 
             {/* ROTAS PÚBLICAS PARA 'customer' */}

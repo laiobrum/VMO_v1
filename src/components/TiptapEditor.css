@@ -2,21 +2,26 @@
   outline: none;
 }
 .editor-container {
-  
   background-color: rgba(228, 228, 228, 0.463);
   margin-bottom: 6px;
   padding: 4px;
   border-radius: 8px;
 }
+.tiptap > p {
+  padding: 4px;
+}
 .cmt-user {
   font-family: 'Roboto', 'Segoe UI', sans-serif;
   font-size: 0.85em;
   color: #414141;
-  margin-bottom: 5px;
-  margin-left: 1px;
+  margin: 0 4px 5px 5px;
+  padding-bottom: 4px;
   border-left: 3px solid #2d6cdf;
   background-color: #2d6bdf0f;
   border-radius: 4px;
+}
+.cmt-user > p {
+  padding-top: 4px;
 }
 .txtBoxContainer {
   border: 1px rgba(0, 0, 0, 0.215) solid;

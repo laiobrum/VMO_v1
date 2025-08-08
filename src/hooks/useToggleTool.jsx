@@ -21,7 +21,7 @@ export const useToggleTool = (bookRef) => {
     const toggleRevogados = () => {
       setShowRevogadosState(prev => {
         const newState = !prev
-        const delTags = bookRef.current?.querySelectorAll('.revogado')
+        const delTags = bookRef.current?.querySelectorAll('.revogado, .leiRef2')
         delTags?.forEach(delTag => {
           delTag.classList.toggle('aparecer', newState)
         })

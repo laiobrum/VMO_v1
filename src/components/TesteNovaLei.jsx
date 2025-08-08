@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import '../pages/lei.css';
 
-const TesteLei = () => {
+const TesteNovaLei = () => {
   const [textoCompleto, setTextoCompleto] = useState('');
   const bookRef = useRef(null);
 
@@ -91,4 +91,4 @@ const TesteLei = () => {
   );
 };
 
-export default TesteLei;
+export default TesteNovaLei;

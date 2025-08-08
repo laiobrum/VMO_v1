@@ -257,13 +257,13 @@ const VisualizeLei = () => {
             )}
 
             {/* TOOLBAR2 - flutuante */}
-            {hoveredP && hoveredP !== activeEditorP && !hoveredP.classList.contains('cmt-user') && (
+            {hoveredP && hoveredP !== activeEditorP && !hoveredP.classList.contains('revogado') && !hoveredP.classList.contains('cmt-user') && (
                 <div
                     className="toolbar-floating"
                     style={{
                         position: 'absolute',
                         top: hoveredP.getBoundingClientRect().top + window.scrollY - 5,
-                        left: hoveredP.getBoundingClientRect().left + window.scrollY - 38,
+                        left: hoveredP.getBoundingClientRect().left + window.scrollX - 38,
                         zIndex: 10,
                     }}
                     onMouseEnter={() => setIsToolbarHovered(true)}
@@ -310,6 +310,8 @@ const VisualizeLei = () => {
                                     }
 
                                     const comentario = document.createElement('div')
+                                    const idDoParagrafo = hoveredP.getAttribute('id') || 'sem-id'
+                                    comentario.id = `${idDoParagrafo}-cmt`
                                     comentario.className = 'cmt-user alterado'
                                     comentario.innerHTML = html
                                     hoveredP.parentNode.insertBefore(comentario, hoveredP.nextSibling)

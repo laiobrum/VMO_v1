@@ -2,13 +2,33 @@ import { NavLink } from "react-router-dom"
 
 const AreaRestrita = () => {
   return (
-    <div>
+    <div className="area-restrita">
         <h2>Administração de conteúdo</h2>
-        <NavLink className='a1' to='/insertlaws'>Incluir leis</NavLink>
-        <br />
-        <NavLink className='a1' to='/consulta-base-dados'>Consulta na base de dados</NavLink>
-        <br />
-        <NavLink className='a1' to='/excluir-alteracoes-user'>Excluir alterações</NavLink>
+
+        <div className="card-container">
+
+          <NavLink className="card" to="/insertlaws">
+            <h3>Incluir leis</h3>
+            <p>Cadastrar novas leis e dispositivos na base.</p>
+          </NavLink>
+
+          <NavLink className="card" to="/consulta-base-dados">
+            <h3>Consulta na base de dados</h3>
+            <p>Pesquisar e visualizar leis cadastradas.</p>
+          </NavLink>
+
+          <NavLink className="card" to="/excluir-alteracoes-user">
+            <h3>Excluir alterações</h3>
+            <p>Remover edições feitas por usuários.</p>
+          </NavLink>
+
+          <NavLink className="card" to="/editar-lei-admin">
+            <h3>Alterar texto da lei</h3>
+            <p>Revogações, alterações e inclusões de texto legal.</p>
+          </NavLink>
+
+        </div>
+
     </div>
   )
 }

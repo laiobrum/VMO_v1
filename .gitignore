@@ -24,8 +24,8 @@ dist-ssr
 *.sw?
 
 # nunca versionar chaves
-src/firebase/*.json
+/src/firebase/keys-SUPER-PRIVATE/
 *.secret.json
 *.key.json
 
-src/firebase/*.json
+
